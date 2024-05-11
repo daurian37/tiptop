@@ -141,6 +141,11 @@ img {
   padding-bottom: 0 !important;
 }
 
+.presentation_jeu {
+  font-size: 34px;
+  font-weight: 600px;
+}
+
 .btn-custom {
   margin-top: 20px;
   background-color: transparent !important;
