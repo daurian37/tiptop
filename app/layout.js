@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-page-custom-font */
+/* eslint-disable @next/next/no-css-tags */
 /* eslint-disable @next/next/no-sync-scripts */
 import "./globals.css";
 
@@ -10,7 +12,28 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <head>
-        <link rel="shortcut icon" href="assets/images/favicon.png" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/style.css" />
+        <link rel="stylesheet" href="css/responsive.css" />
+        <link rel="icon" href="images/fevicon.png" type="image/gif" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap"
+          rel="stylesheet"
+        />
+        <link rel="stylesheet" href="css/jquery.mCustomScrollbar.min.css" />
+
+        <link
+          rel="stylesheet"
+          href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css"
+        />
         <link
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           rel="stylesheet"
@@ -30,7 +53,7 @@ export default function RootLayout({ children }) {
         ></script>
       </head>
 
-      <body className="body">{children}</body>
+      <body classNameName="body">{children}</body>
     </html>
   );
 }
