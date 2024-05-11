@@ -240,6 +240,12 @@ button {
   color: #a9a8a8;
   border-radius: 5px;
   text-transform: uppercase;
+  
+}
+
+.navbar-expand-lg .navbar-nav {
+  margin-left: 35rem;
+  
 }
 
 .navbar-light .navbar-nav .nav-link:focus,
