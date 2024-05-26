@@ -38,7 +38,7 @@ function Header() {
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="shop.html">
+                <a className="nav-link" href="http://localhost:3000/login">
                   S'identifier
                 </a>
               </li>
