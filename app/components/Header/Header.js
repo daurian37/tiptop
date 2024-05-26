@@ -35,7 +35,7 @@ function Header() {
               </li>
 
               <li className="nav-item">
-                <a className="nav-link" href="about.html">
+                <a className="nav-link" href="/gains">
                   Gains
                 </a>
               </li>
