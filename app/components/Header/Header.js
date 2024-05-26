@@ -6,7 +6,7 @@ function Header() {
     <div>
       <div className="container-fluid">
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
-          <a className="navbar-brand" href="index.html">
+          <a className="navbar-brand" href="http:/">
             <img src="/assets/images/logo.png" />
           </a>
           <button
@@ -23,27 +23,37 @@ function Header() {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav ml-auto">
               <li className="nav-item active">
-                <a className="nav-link" href="http://localhost:3000/">
+                <a className="nav-link" href="/">
                   Accueil
                 </a>
               </li>
+
+              <li className="nav-item">
+                <a className="nav-link" href="/login">
+                  Participer
+                </a>
+              </li>
+
               <li className="nav-item">
                 <a className="nav-link" href="about.html">
                   Gains
                 </a>
               </li>
+
               <li className="nav-item">
+                <a className="nav-link" href="/about">
+                  A propos
+                </a>
+              </li>
+
+              {/* <li className="nav-item">
                 <a className="nav-link" href="coffees.html">
                   Boutique
                 </a>
-              </li>
+              </li> */}
+
               <li className="nav-item">
-                <a className="nav-link" href="http://localhost:3000/login">
-                  S'identifier
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="http://localhost:3000/contact">
+                <a className="nav-link" href="/contact">
                   Contact
                 </a>
               </li>
