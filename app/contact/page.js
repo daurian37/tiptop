@@ -12,7 +12,7 @@ const Contact = () => {
         <div className="container">
           <div className="row">
             <div className="col-sm-12">
-              <h1 className="contact_taital">Get In Touch</h1>
+              <h1 className="contact_taital">Nous contacter</h1>
               <div className="bulit_icon">
                 <img src="assets/images/bulit-icon.png" />
               </div>
