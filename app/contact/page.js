@@ -50,7 +50,7 @@ const Contact = () => {
                     name="Massage"
                   ></textarea>
                   <div className="send_bt mb-5">
-                    <a href="#">SEND</a>
+                    <a href="#">ENVOYER</a>
                   </div>
                 </div>
               </div>
