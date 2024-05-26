@@ -29,7 +29,7 @@ function Header() {
               </li>
 
               <li className="nav-item">
-                <a className="nav-link" href="/login">
+                <a className="nav-link" href="/jouer">
                   Participer
                 </a>
               </li>
@@ -45,13 +45,6 @@ function Header() {
                   A propos
                 </a>
               </li>
-
-              {/* <li className="nav-item">
-                <a className="nav-link" href="coffees.html">
-                  Boutique
-                </a>
-              </li> */}
-
               <li className="nav-item">
                 <a className="nav-link" href="/contact">
                   Contact

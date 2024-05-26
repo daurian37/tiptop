@@ -12,8 +12,8 @@ const About = () => {
         <div className="container">
           <div className="row">
             <div className="col-md-12">
-              <h1 className="about_taital">About Our shop</h1>
-              <div className="bulit_icon">
+              <h1 className="about_taital">A propos du jeu concours</h1>
+              <div className="bulit_icon mb-5">
                 <img src="assets/images/bulit-icon.png" />
               </div>
             </div>
@@ -25,15 +25,18 @@ const About = () => {
             <div className="about_taital_box">
               <h4 className="about_taital_1">Présentation du jeu-concours</h4>
               <p className="about_text">
-                has a more-or-less normal distribution of letters, as opposed to
-                using 'Content here, content here', making it look like readable
-                English. Many desktop publishing packages and web page editorhas
-                a more-or-less normal distribution of letters, as opposed to
-                using 'Content here, content here', making it look like readable
-                English. Many desktop publishing packages and web page editor
+                A l'occasion de l'ouverture de notre 10ème boutique à Nice. Nous
+                organisons un jeu concours par tirage au sort pour promouvoir
+                nos produits. La participation est ouverte à tout client ayant
+                un ticket de caisse ou une facture supérieure à 49€.
+                <br />
+                Participez dès maintenant pour gagner des prix fantastiques !{" "}
+                <br />
+                En prime, vous serez automatiquement inscrit pour avoir la
+                chance de remporter un an entier de thé d'une valeur de 360€
               </p>
-              <div class="readmore_btn">
-                <a href="#">Read More</a>
+              <div class="read_bt">
+                <a href="/gains">Lots à gagner</a>
               </div>
             </div>
           </div>

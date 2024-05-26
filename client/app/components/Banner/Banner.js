@@ -22,14 +22,17 @@ function Banner() {
                     </div>
                     <div className="col-md-6">
                       <div className="banner_taital_main">
-                        <h1 className="banner_taital">Tea</h1>
+                        <h1 className="banner_taital">
+                          PARTICIPEZ AU JEU CONCOURS
+                        </h1>
                         <p className="banner_text">
-                          more-or-less normal distribution of letters, as
-                          opposed to using
+                          A l'occasion de l'ouverture de notre 10ème boutique à
+                          Nice. Nous organisons un jeu concours par tirage au
+                          sort pour promouvoir nos produits.
                         </p>
                         <div className="btn_main">
                           <div className="about_bt">
-                            <a href="#">About Us</a>
+                            <a href="/login">Jouer</a>
                           </div>
                         </div>
                       </div>
@@ -37,22 +40,6 @@ function Banner() {
                   </div>
                 </div>
               </div>
-              <a
-                className="carousel-control-prev"
-                href="#banner_slider"
-                role="button"
-                data-slide="prev"
-              >
-                <i className="fa fa-arrow-left"></i>
-              </a>
-              <a
-                className="carousel-control-next"
-                href="#banner_slider"
-                role="button"
-                data-slide="next"
-              >
-                <i className="fa fa-arrow-right"></i>
-              </a>
             </div>
           </div>
         </div>

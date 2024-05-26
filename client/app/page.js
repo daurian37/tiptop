@@ -3,7 +3,7 @@ import Header from "./components/Header/Header";
 import HomeGrid from "./components/HomeGrid/HomeGrid";
 import Footer from "./components/Footer/Footer";
 import "./globals.css";
-import Partenariat from "./components/Partenariat/Partenariat";
+import Partenariat from "./components/Participer/Participer";
 import Banner from "./components/Banner/Banner";
 
 export default function Home() {
@@ -12,7 +12,6 @@ export default function Home() {
       <Header />
       <Banner />
       <HomeGrid />
-      <Partenariat />
       <Footer />
     </div>
   );
