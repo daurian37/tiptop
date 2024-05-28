@@ -20,10 +20,6 @@ export default function RootLayout({ children }) {
                 <meta name="keywords" content="" />
                 <meta name="description" content="" />
                 <meta name="author" content="" />
-                {/* <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-                <link rel="stylesheet" type="text/css" href="css/style.css" />
-                <link rel="stylesheet" href="css/responsive.css" /> */}
-                {/* <link rel="stylesheet" href="css/jquery.mCustomScrollbar.min.css" /> */}
                 <link rel="icon" href="images/fevicon.png" type="image/gif" />
                 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
 
