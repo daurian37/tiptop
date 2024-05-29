@@ -7,7 +7,6 @@ import "../public/assets/css/style.css";
 
 import Partenariat from "./components/Partenariat/Partenariat";
 import Banner from "./components/Banner/Banner";
-import { useEffect, useState } from "react";
 
 export default function Home() {
     return (

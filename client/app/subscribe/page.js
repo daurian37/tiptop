@@ -4,11 +4,12 @@ import React, { useState } from "react";
 import Header from "../components/Header/Header.js";
 import Footer from "../components/Footer/Footer.js";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const Subscribe = () => {
     const [errors, setErrors] = useState({});
     const [errorMessage, setErrorMessage] = useState("");
-
+    const router = useRouter();
     const [value, setValue] = useState({
         firstname: "",
         lastname: "",
@@ -42,7 +43,7 @@ const Subscribe = () => {
         axios
             .post("http://localhost:8000/register", value)
             .then((res) => {
-                console.log(res.data);
+                router.push("/login");
             })
             .catch((err) => {
                 setErrors({}); // Réinitialiser les erreurs précédentes
@@ -77,7 +78,7 @@ const Subscribe = () => {
                                 <div className="col-md-12">
                                     <div className="mail_section_1">
                                         <div className="mb-3">
-                                            <input type="text" onChange={handleChange} className={`form-control ${errors.lastname ? "is-invalid" : ""}`} placeholder="votre nom" name="lastname" />
+                                            <input type="text" onChange={handleChange} className={`form-control ${errors.lastname ? "is-invalid" : ""}`} placeholder="Votre nom" name="lastname" />
                                             {errors.lastname && <div className="invalid-feedback text-start">{errors.lastname}</div>}
                                         </div>
                                         <div className="mb-3">
