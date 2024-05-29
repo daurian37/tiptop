@@ -14,7 +14,7 @@ function HomeGrid() {
                 organisons un jeu concours par tirage au sort pour promouvoir
                 nos produits.
               </p>
-              <div class="read_bt">
+              <div className="read_bt">
                 <a href="/about">En savoir plus</a>
               </div>
             </div>
