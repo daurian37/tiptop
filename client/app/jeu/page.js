@@ -1,6 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
+import Header from "../components/Header/Header";
+import Footer from "../components/Footer/Footer";
+import Roulette from "../components/Roulette/Roulette";
 
 const Jeu = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -15,7 +18,15 @@ const Jeu = () => {
   }, []);
 
   if (isLoggedIn) {
-    return <div>jeu</div>;
+    return (
+      <div>
+        <Header />
+        <header className="App-header">
+          <Roulette />
+        </header>
+        <Footer />
+      </div>
+    );
   } else {
     return null;
   }
