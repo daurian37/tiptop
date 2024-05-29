@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../../../public/assets/css/style.css";
+import swal from "sweetalert";
 
 function Banner() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Vérifiez si un token est présent dans le localStorage
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token); // !! converts token to boolean
+  }, []);
+
+  const showMessagePopup = () => {
+    swal("Connexion requise", "Vous devez vous connecter pour jouer.", "info");
+  };
+
   return (
     <div>
       <div className="header_section">
@@ -22,37 +35,35 @@ function Banner() {
                     </div>
                     <div className="col-md-6">
                       <div className="banner_taital_main">
-                        <h1 className="banner_taital">Tea</h1>
+                        <h1 className="banner_taital">
+                          PARTICIPEZ AU JEU CONCOURS
+                        </h1>
                         <p className="banner_text">
-                          more-or-less normal distribution of letters, as
-                          opposed to using
+                          A l'occasion de l'ouverture de notre 10ème boutique à
+                          Nice. Nous organisons un jeu concours par tirage au
+                          sort pour promouvoir nos produits.
                         </p>
-                        <div className="btn_main">
-                          <div className="about_bt">
-                            <a href="#">About Us</a>
-                          </div>
+                        <div className="btn_main mt-3">
+                          {isLoggedIn ? (
+                            <div className="about_bt">
+                              <a href="/jeu">Jouer</a>
+                            </div>
+                          ) : (
+                            <div className="about_bt">
+                              <a
+                                href="/jeu"
+                                onClick={!isLoggedIn ? showMessagePopup : null}
+                              >
+                                Jouer
+                              </a>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <a
-                className="carousel-control-prev"
-                href="#banner_slider"
-                role="button"
-                data-slide="prev"
-              >
-                <i className="fa fa-arrow-left"></i>
-              </a>
-              <a
-                className="carousel-control-next"
-                href="#banner_slider"
-                role="button"
-                data-slide="next"
-              >
-                <i className="fa fa-arrow-right"></i>
-              </a>
             </div>
           </div>
         </div>
