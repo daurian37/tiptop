@@ -101,6 +101,11 @@ app.post("/register", (req, res) => {
             return res.status(409).json("Un utilisateur avec cet email existe déjà");
         }
 
+        const validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
+        if (!req.body.password.match(validPassword)) {
+            return res.status(400).json("Mot de passe incorrect. Il doit contenir entre 8 et 20 caractères, inclure au moins une lettre majuscule, une lettre minuscule et un chiffre.");
+        }
+
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(req.body.password, salt);
 
