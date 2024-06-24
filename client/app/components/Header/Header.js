@@ -17,12 +17,13 @@ const Header = () => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
     redirect("/");
+    window.location.reload();
   };
   return (
     <div className="container-fluid p-0">
       <nav className="navbar navbar-expand-lg navbar-light">
         <div>
-          <img src="/assets/images/logo.png" className="logo"/>
+          <img src="/assets/images/logo.png" className="logo" />
         </div>
         <button
           className="navbar-toggler"

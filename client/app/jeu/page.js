@@ -21,9 +21,9 @@ const Jeu = () => {
     return (
       <div>
         <Header />
-        <header className="App-header">
+        <div>
           <Roulette />
-        </header>
+        </div>
         <Footer />
       </div>
     );

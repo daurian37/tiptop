@@ -13,11 +13,36 @@ const data = [
 const Roulette = () => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
+  const [ticketNumber, setTicketNumber] = useState("");
+  const [isValidTicket, setIsValidTicket] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSpinClick = () => {
     const newPrizeNumber = Math.floor(Math.random() * data.length);
     setPrizeNumber(newPrizeNumber);
     setMustSpin(true);
+  };
+
+  const handleTicketValidation = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/ticket/${ticketNumber}`
+      );
+      const result = await response.json();
+
+      if (result.valid) {
+        setIsValidTicket(true);
+      } else {
+        setIsValidTicket(false);
+        setErrorMessage("Numéro de ticket invalide. Veuillez réessayer.");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la validation du ticket :", error);
+      setErrorMessage("Une erreur est survenue. Veuillez réessayer.");
+    }
   };
 
   return (
@@ -42,14 +67,25 @@ const Roulette = () => {
             avec les détails de votre gain et les instructions pour le récupérer
           </p>
 
-          <form>
-            <input type="text" placeholder="Code ticket" />
-            <button className="submit-btn">Valider</button>
+          <form onSubmit={handleTicketValidation}>
+            <input
+              type="text"
+              placeholder="Code ticket"
+              value={ticketNumber}
+              onChange={(e) => setTicketNumber(e.target.value)}
+            />
+            <button type="submit" className="submit-btn">
+              Valider
+            </button>
           </form>
 
-          <button onClick={handleSpinClick} className="game-btn">
-            Jouer
-          </button>
+          {errorMessage && <p className="error">{errorMessage}</p>}
+
+          {isValidTicket && (
+            <button onClick={handleSpinClick} className="game-btn">
+              Jouer
+            </button>
+          )}
         </div>
       </div>
       <div className="main-content">
