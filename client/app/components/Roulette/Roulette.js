@@ -45,6 +45,38 @@ const Roulette = () => {
     }
   };
 
+  const savePrizeToDatabase = async (title, idTicket) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/lot`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: title,
+          idTicket: idTicket,
+        }),
+      });
+
+      const result = await response.json();
+
+      console.log(result);
+
+      if (!response.ok) {
+        throw new Error(
+          result.message || "Une erreur est survenue lors de l'enregistrement."
+        );
+      }
+
+      console.log("Enregistrement réussi:", result);
+    } catch (error) {
+      console.error(
+        "Erreur lors de l'enregistrement du lot (client):",
+        error.message
+      );
+    }
+  };
+
   return (
     <div className="container-roulette">
       <div className="sidebar">
@@ -97,6 +129,8 @@ const Roulette = () => {
           textColors={["#ffffff"]}
           onStopSpinning={() => {
             setMustSpin(false);
+            const prizeWon = data[prizeNumber].option;
+            savePrizeToDatabase(prizeWon, ticketNumber);
           }}
         />
       </div>
