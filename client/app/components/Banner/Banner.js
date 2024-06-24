@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "../../../public/assets/css/style.css";
-import swal from "sweetalert";
 
 function Banner() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
