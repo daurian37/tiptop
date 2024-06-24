@@ -11,10 +11,6 @@ function Banner() {
     setIsLoggedIn(!!token); // !! converts token to boolean
   }, []);
 
-  const showMessagePopup = () => {
-    swal("Connexion requise", "Vous devez vous connecter pour jouer.", "info");
-  };
-
   return (
     <div>
       <div className="header_section">
@@ -50,12 +46,7 @@ function Banner() {
                             </div>
                           ) : (
                             <div className="about_bt">
-                              <a
-                                href="/jeu"
-                                onClick={!isLoggedIn ? showMessagePopup : null}
-                              >
-                                Jouer
-                              </a>
+                              <a href="/login">Jouer</a>
                             </div>
                           )}
                         </div>
