@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Wheel } from "react-custom-roulette";
+import swal from "sweetalert";
 import "../../../public/assets/css/roulette.css";
 
 const data = [
@@ -60,10 +61,6 @@ const Roulette = () => {
     }
   };
 
-  const reloadPage = () => {
-    window.location.reload();
-  };
-
   const savePrizeToDatabase = async (title, idTicket) => {
     try {
       const response = await fetch(`http://localhost:8000/api/lot`, {
@@ -79,13 +76,24 @@ const Roulette = () => {
 
       const result = await response.json();
 
-      console.log(result.message);
+      console.log(title);
 
       if (!response.ok) {
         throw new Error(
           result.message || "Une erreur est survenue lors de l'enregistrement."
         );
       }
+
+      swal({
+        title: "Félicitations",
+        text: `Vous avez gagné ${title}`,
+        icon: "success",
+        buttons: true,
+      }).then((willUpdate) => {
+        if (willUpdate) {
+          window.location.reload();
+        }
+      });
 
       console.log("Enregistrement réussi:", result);
     } catch (error) {
@@ -123,6 +131,7 @@ const Roulette = () => {
             <input
               type="text"
               placeholder="Code ticket"
+              required
               value={ticketNumber}
               onChange={(e) => setTicketNumber(e.target.value)}
             />
