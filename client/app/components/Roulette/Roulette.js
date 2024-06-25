@@ -15,6 +15,7 @@ const Roulette = () => {
   const [prizeNumber, setPrizeNumber] = useState(0);
   const [ticketNumber, setTicketNumber] = useState("");
   const [isValidTicket, setIsValidTicket] = useState(false);
+  const [isTicketInLot, setIsTicketInLot] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSpinClick = () => {
@@ -28,13 +29,27 @@ const Roulette = () => {
     setErrorMessage("");
 
     try {
+      // Valider le ticket
       const response = await fetch(
         `http://localhost:8000/api/ticket/${ticketNumber}`
       );
       const result = await response.json();
 
       if (result.valid) {
-        setIsValidTicket(true);
+        // Vérifier si le ticket existe déjà dans la table lot
+        const checkResponse = await fetch(
+          `http://localhost:8000/api/checkTicketInLot/${ticketNumber}`
+        );
+        const checkResult = await checkResponse.json();
+
+        if (!checkResult.exists) {
+          setIsValidTicket(true);
+          setIsTicketInLot(false);
+        } else {
+          setIsValidTicket(false);
+          setIsTicketInLot(true);
+          setErrorMessage("Ce ticket a déjà été utilisé pour gagner un lot.");
+        }
       } else {
         setIsValidTicket(false);
         setErrorMessage("Numéro de ticket invalide. Veuillez réessayer.");
@@ -43,6 +58,10 @@ const Roulette = () => {
       console.error("Erreur lors de la validation du ticket :", error);
       setErrorMessage("Une erreur est survenue. Veuillez réessayer.");
     }
+  };
+
+  const reloadPage = () => {
+    window.location.reload();
   };
 
   const savePrizeToDatabase = async (title, idTicket) => {
@@ -60,7 +79,7 @@ const Roulette = () => {
 
       const result = await response.json();
 
-      console.log(result);
+      console.log(result.message);
 
       if (!response.ok) {
         throw new Error(
@@ -95,8 +114,9 @@ const Roulette = () => {
 
           <strong>Comment récupérer votre prix ?</strong>
           <p>
-            Une fois que vous avez gagné, vous recevrez un email de confirmation
-            avec les détails de votre gain et les instructions pour le récupérer
+            Une fois que vous avez gagné, dirigez vous dans la page{" "}
+            <b>Mon profil</b> puis <b> Mes participations</b> vous trouverez les
+            détails de votre gain et les instructions pour le récupérer
           </p>
 
           <form onSubmit={handleTicketValidation}>
