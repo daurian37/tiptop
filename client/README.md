@@ -43,3 +43,15 @@ fix/bugfix: s'il s'agit de la correction d'un bug
 feat/feature: ajout d'une fonctionnalité
 
 chore: nettoyage de code
+
+Pour executer les tests e2e:
+
+```bash
+npx playwright test --headed
+```
+
+Pour visualiser les rapports de tests e2e
+
+```bash
+npx playwright show-report
+```
