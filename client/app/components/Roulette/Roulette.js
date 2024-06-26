@@ -154,7 +154,7 @@ const Roulette = () => {
           mustStartSpinning={mustSpin}
           prizeNumber={prizeNumber}
           data={data}
-          backgroundColors={["#3e3e3e", "#df3428"]}
+          backgroundColors={["#3e3e3e", "#98a86c"]}
           textColors={["#ffffff"]}
           onStopSpinning={() => {
             setMustSpin(false);
