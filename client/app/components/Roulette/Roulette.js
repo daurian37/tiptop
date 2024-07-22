@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Wheel } from "react-custom-roulette";
 import "../../../public/assets/css/roulette.css";
+import "./Roulette.css"; 
 
 const data = [
   { option: "Infuseur à Thé" },

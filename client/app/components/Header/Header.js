@@ -16,9 +16,16 @@ const Header = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
-    redirect("/");
-    window.location.reload();
+
+    // Vérifiez si l'URL actuelle est "/profile"
+    if (window.location.pathname === "/profile") {
+      window.location.href = "/";
+    } else {
+      redirect("/");
+      window.location.reload();
+    }
   };
+
   return (
     <div className="container-fluid p-0">
       <nav className="navbar navbar-expand-lg navbar-light">

@@ -46,7 +46,7 @@ const Subscribe = () => {
                 router.push("/login");
             })
             .catch((err) => {
-                setErrors({}); // Réinitialiser les erreurs précédentes
+                setErrors({}); 
                 setErrorMessage(err.response.data);
             });
     };

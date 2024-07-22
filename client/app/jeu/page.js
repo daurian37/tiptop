@@ -19,13 +19,11 @@ const Jeu = () => {
 
   if (isLoggedIn) {
     return (
-      <div>
+      <>
         <Header />
-        <div>
           <Roulette />
-        </div>
         <Footer />
-      </div>
+      </>
     );
   } else {
     return null;
