@@ -1,65 +1,64 @@
 import React, { useState } from "react";
 import { Wheel } from "react-custom-roulette";
 import swal from "sweetalert";
-// import "../../../public/assets/css/roulette.css";
+import "../../../public/assets/css/roulette.css";
 
 // Importez le module styleInject
-import styleInject from 'style-inject';
+// import styleInject from 'style-inject';
 
 // Définissez votre CSS en tant que chaîne de caractères
-const css = `
-  /* Roulette */
-  .container-roulette {
-    display: flex;
-    width: 100%;
-    height: 100vh;
-    margin: 5rem;
-    margin-top: 0;
-  }
+// const css = `
+//   /* Roulette */
+//   .container-roulette {
+//     display: flex;
+//     width: 100%;
+//     height: 100vh;
+//     margin: 5rem;
+//     margin-top: 0;
+//   }
   
-  .sidebar {
-    width: 30%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+//   .sidebar {
+//     width: 30%;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//   }
   
-  .main-content {
-    width: 70%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+//   .main-content {
+//     width: 70%;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//   }
   
-  .game-btn {
-    margin-top: 20px;
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #98a86c;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+//   .game-btn {
+//     margin-top: 20px;
+//     padding: 10px 20px;
+//     font-size: 16px;
+//     background-color: #98a86c;
+//     color: #fff;
+//     border: none;
+//     border-radius: 5px;
+//     cursor: pointer;
+//   }
   
-  .submit-btn {
-    margin-top: 20px;
-    padding: 5px 10px;
-    font-size: 16px;
-    background-color: #98a86c;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+//   .submit-btn {
+//     margin-top: 20px;
+//     padding: 5px 10px;
+//     font-size: 16px;
+//     background-color: #98a86c;
+//     color: #fff;
+//     border: none;
+//     border-radius: 5px;
+//     cursor: pointer;
+//   }
   
-  button:hover {
-    background-color: #dfe7c9;
-  }
-`;
+//   button:hover {
+//     background-color: #dfe7c9;
+//   }
+// `;
 
-// Appliquez le CSS avec styleInject
-styleInject(css);
+// styleInject(css);
 
 
 const data = [
