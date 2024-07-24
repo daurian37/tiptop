@@ -19,6 +19,7 @@ const Header = () => {
         setIsLoggedIn(false);
         router.push("/");
     };
+
     return (
         <div className="container-fluid p-0">
             <nav className="navbar navbar-expand-lg navbar-light">
