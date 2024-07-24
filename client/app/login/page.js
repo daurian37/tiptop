@@ -4,13 +4,15 @@ import React, { useState } from "react";
 import Header from "../components/Header/Header.js";
 import Footer from "../components/Footer/Footer.js";
 import axios from "axios";
-import { redirect } from "next/navigation.js";
+import { useRouter } from "next/navigation.js";
 
 const login = () => {
     const [errors, setErrors] = useState({});
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    // const navigate = useNavigate();
+
+    const router = useRouter();
+
     const [value, setValue] = useState({
         email: "",
         password: "",
@@ -38,7 +40,7 @@ const login = () => {
             .then((res) => {
                 localStorage.setItem("token", res.data.token);
                 setIsLoggedIn(true);
-                window.location.href = "http://localhost:3000/";
+                router.push("/profile");
             })
             .catch((err) => {
                 setErrors({}); // Réinitialiser les erreurs précédentes
