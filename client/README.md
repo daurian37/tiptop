@@ -14,10 +14,16 @@ Installer les dépendances:
 npm install
 ```
 
-run the development server:
+executer le front:
 
 ```bash
 npm run dev
+```
+
+executer le serveur:
+
+```bash
+npm start
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -54,4 +60,9 @@ Pour visualiser les rapports de tests e2e
 
 ```bash
 npx playwright show-report
+```
+executer les tests unitaires:
+
+```bash
+npm run test
 ```
