@@ -292,6 +292,19 @@ app.post("/api/lot", (req, res) => {
     });
 });
 
+// Définir la route pour récupérer les lots
+app.get('/api/totalLots', (req, res) => {
+  const query = 'SELECT * FROM lot';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Erreur lors de la récupération des lots :', err);
+      res.status(500).send('Erreur serveur');
+      return;
+    }
+    res.json(results);
+  });
+});
+
 app.get("/protected-route", verifyToken, (req, res) => {
     // Si le token est valide, vous pouvez utiliser req.email pour accéder à l'adresse e-mail de l'utilisateur
     res.json({ message: "Access granted", email: req.email });
