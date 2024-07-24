@@ -11,10 +11,11 @@
   "dependencies": {
     "axios": "^1.7.2",
     "next": "14.2.3",
-    "react": "^18",
+    "react": "^18.3.1",
     "react-custom-roulette": "^1.4.1",
-    "react-dom": "^18",
+    "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1",
+    "style-inject": "^0.3.0",
     "swal": "^0.1.0",
     "sweetalert": "^2.1.2"
   },
