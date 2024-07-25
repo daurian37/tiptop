@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Wheel } from "react-custom-roulette";
 import swal from "sweetalert";
 import "../../../public/assets/css/roulette.css";
-
-
 
 const data = [
   { option: "Infuseur à Thé" },
@@ -20,12 +18,112 @@ const Roulette = () => {
   const [isValidTicket, setIsValidTicket] = useState(false);
   const [isTicketInLot, setIsTicketInLot] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [totalLots, setTotalLots] = useState(0);
+  const [availablePrizes, setAvailablePrizes] = useState({
+    infuseur: 0,
+    detox: 0,
+    signature: 0,
+    mini: 0,
+    max: 0,
+  });
+
+  useEffect(() => {
+    const fetchTotalLots = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/api/totalLots`);
+        const result = await response.json();
+        setTotalLots(result.length);
+      } catch (error) {
+        console.error("Erreur lors de la récupération du nombre total de lots :", error);
+      }
+    };
+  
+    const fetchAvailablePrizes = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/api/totalLots`);
+        const result = await response.json();
+    
+        if (Array.isArray(result)) {
+          const newAvailablePrizes = { infuseur: 0, detox: 0, signature: 0, mini: 0, max: 0 };
+          result.forEach(lot => {
+            switch (lot.title) {
+              case "Infuseur à Thé":
+                newAvailablePrizes.infuseur++;
+                break;
+              case "Thé détox":
+                newAvailablePrizes.detox++;
+                break;
+              case "Thé signature":
+                newAvailablePrizes.signature++;
+                break;
+              case "Coffret D mini":
+                newAvailablePrizes.mini++;
+                break;
+              case "Coffret D max":
+                newAvailablePrizes.max++;
+                break;
+              default:
+                break;
+            }
+          });
+          setAvailablePrizes(newAvailablePrizes);
+        } else {
+          console.error("Réponse inattendue:", result);
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des lots disponibles :", error);
+      }
+    };
+    
+  
+    fetchTotalLots();
+    fetchAvailablePrizes();
+  }, []);
+  
 
   const handleSpinClick = () => {
-    const newPrizeNumber = Math.floor(Math.random() * data.length);
+    if (totalLots >= 20) {
+      setErrorMessage("Tous les lots ont été attribués. Merci de revenir plus tard.");
+      return;
+    }
+
+    const newPrizeNumber = getPrizeNumberBasedOnAvailability();
+    if (newPrizeNumber === null) {
+      setErrorMessage("Erreur lors du tirage. Veuillez réessayer.");
+      return;
+    }
+    
     setPrizeNumber(newPrizeNumber);
     setMustSpin(true);
   };
+
+  const getPrizeNumberBasedOnAvailability = () => {
+    const totalTickets = 20;
+    const availablePrizesList = [];
+  
+    if (availablePrizes.infuseur < 0.6 * totalTickets) {
+      availablePrizesList.push(0); // Infuseur à Thé
+    }
+    if (availablePrizes.detox < 0.2 * totalTickets) {
+      availablePrizesList.push(1); // Thé détox
+    }
+    if (availablePrizes.signature < 0.1 * totalTickets) {
+      availablePrizesList.push(2); // Thé signature
+    }
+    if (availablePrizes.mini < 0.06 * totalTickets) {
+      availablePrizesList.push(3); // Coffret D mini
+    }
+    if (availablePrizes.max < 0.04 * totalTickets) {
+      availablePrizesList.push(4); // Coffret D max
+    }
+  
+    if (availablePrizesList.length === 0) {
+      return null;
+    }
+  
+    return availablePrizesList[Math.floor(Math.random() * availablePrizesList.length)];
+  };
+  
 
   const handleTicketValidation = async (e) => {
     e.preventDefault();
@@ -33,16 +131,12 @@ const Roulette = () => {
 
     try {
       // Valider le ticket
-      const response = await fetch(
-        `http://localhost:8000/api/ticket/${ticketNumber}`
-      );
+      const response = await fetch(`http://localhost:8000/api/ticket/${ticketNumber}`);
       const result = await response.json();
 
       if (result.valid) {
         // Vérifier si le ticket existe déjà dans la table lot
-        const checkResponse = await fetch(
-          `http://localhost:8000/api/checkTicketInLot/${ticketNumber}`
-        );
+        const checkResponse = await fetch(`http://localhost:8000/api/checkTicketInLot/${ticketNumber}`);
         const checkResult = await checkResponse.json();
 
         if (!checkResult.exists) {
@@ -78,12 +172,8 @@ const Roulette = () => {
 
       const result = await response.json();
 
-      console.log(title);
-
       if (!response.ok) {
-        throw new Error(
-          result.message || "Une erreur est survenue lors de l'enregistrement."
-        );
+        throw new Error(result.message || "Une erreur est survenue lors de l'enregistrement.");
       }
 
       swal({
@@ -97,12 +187,8 @@ const Roulette = () => {
         }
       });
 
-      console.log("Enregistrement réussi:", result);
     } catch (error) {
-      console.error(
-        "Erreur lors de l'enregistrement du lot (client):",
-        error.message
-      );
+      console.error("Erreur lors de l'enregistrement du lot (client):", error.message);
     }
   };
 
@@ -112,21 +198,16 @@ const Roulette = () => {
         <div className="container">
           <strong>Comment jouer ?</strong>
           <ol>
-            <li>
-              1. Obtenez un ticket de participation après un achat en magasin ou
-              en ligne
-            </li>
-            <li>
-              2. Saisissez le code ticket pour vérifier votre participation
-            </li>
-            <li>3. Tournez la roulette et gagnez un prix </li>
+            <li>1. Obtenez un ticket de participation après un achat en magasin ou en ligne</li>
+            <li>2. Saisissez le code ticket pour vérifier votre participation</li>
+            <li>3. Tournez la roulette et gagnez un prix</li>
           </ol>
 
           <strong>Comment récupérer votre prix ?</strong>
           <p>
-            Une fois que vous avez gagné, dirigez vous dans la page{" "}
-            <b>Mon profil</b> puis <b> Mes participations</b> vous trouverez les
-            détails de votre gain et les instructions pour le récupérer
+            Une fois que vous avez gagné, dirigez-vous dans la page{" "}
+            <b>Mon profil</b> puis <b>Mes participations</b> vous trouverez les
+            détails de votre gain et les instructions pour le récupérer.
           </p>
 
           <form onSubmit={handleTicketValidation}>
