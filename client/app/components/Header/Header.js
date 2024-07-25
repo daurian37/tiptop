@@ -15,10 +15,12 @@ const Header = () => {
         const token = localStorage.getItem("token");
         setIsLoggedIn(!!token); // !! converts token to boolean
 
-        const user = jwtDecode(token);
+        if (token) {
+            const user = jwtDecode(token);
 
-        if (user.category === 1) {
-            setIsAdmin(true);
+            if (user.category === 1) {
+                setIsAdmin(true);
+            }
         }
     }, []);
 
