@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/Header/Header.js";
 import Footer from "../components/Footer/Footer.js";
 import axios from "axios";
 import { useRouter } from "next/navigation.js";
+import { jwtDecode } from "jwt-decode";
 
 const login = () => {
     const [errors, setErrors] = useState({});
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
     const router = useRouter();
 
     const [value, setValue] = useState({
@@ -38,12 +38,19 @@ const login = () => {
         axios
             .post("http://localhost:8000/login", value)
             .then((res) => {
-                localStorage.setItem("token", res.data.token);
+                const token = res.data.token;
+                const user = jwtDecode(token);
+                localStorage.setItem("token", token);
                 setIsLoggedIn(true);
-                router.push("/profile");
+
+                if (user.category === 1) {
+                    router.push("/admin");
+                } else {
+                    router.push("/");
+                }
             })
             .catch((err) => {
-                setErrors({}); // Réinitialiser les erreurs précédentes
+                setErrors({});
                 setErrorMessage(err.response.data);
             });
     };

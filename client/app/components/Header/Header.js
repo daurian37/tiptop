@@ -3,15 +3,24 @@
 import React, { useEffect, useState } from "react";
 import "../../../public/assets/css/style.css";
 import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
 
 const Header = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
-        // Vérifiez si un token est présent dans le localStorage
         const token = localStorage.getItem("token");
-        setIsLoggedIn(!!token); // !! converts token to boolean
+        setIsLoggedIn(!!token);
+
+        if (token) {
+            const user = jwtDecode(token);
+
+            if (user.category === 1) {
+                setIsAdmin(true);
+            }
+        }
     }, []);
 
     const handleLogout = () => {
@@ -50,11 +59,19 @@ const Header = () => {
                                 A propos
                             </a>
                         </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="/contact">
-                                Contact
-                            </a>
-                        </li>
+                        {isAdmin ? (
+                            <li className="nav-item">
+                                <a className="nav-link" href="/admin">
+                                    Admin
+                                </a>
+                            </li>
+                        ) : (
+                            <li className="nav-item">
+                                <a className="nav-link" href="/contact">
+                                    Contact
+                                </a>
+                            </li>
+                        )}
                         {isLoggedIn ? (
                             <>
                                 <li className="nav-item">

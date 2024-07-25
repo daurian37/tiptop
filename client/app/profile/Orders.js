@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import formatDate from "../components/utils/formatDate";
+import BasicModal from "./BasicModal";
 
 const Orders = () => {
     const [tickets, setTickets] = useState([]);
@@ -22,44 +23,53 @@ const Orders = () => {
             });
     }, []);
 
-    const currentDate = formatDate(Date.now());
+    const isExpired = (dateFin) => {
+        const now = new Date();
+        const endDate = new Date(dateFin);
+        return endDate < now;
+    };
+
+    const truncate = (str, n) => {
+        return str.length > n ? str.substring(0, n) + "..." : str;
+    };
 
     return (
-        <div className="mx-auto">
-            <table class="rwd-table">
-                <tbody>
-                    <tr>
-                        <th>Titre</th>
-                        <th>Jeu de concours</th>
-                        <th>Date début</th>
-                        <th>Date fin</th>
-                        <th>Statut</th>
-                        <th>Action</th>
-                    </tr>
-                    {tickets.length > 0 ? (
-                        tickets.map((ticket) => (
-                            <tr key={ticket.idTicket}>
-                                <td data-th="Titre">{ticket.ticketTitle}</td>
-                                <td data-th="Jeu de concours">{ticket.gameTitle}</td>
-                                <td data-th="Date début">{formatDate(ticket.dateDebut)}</td>
-                                <td data-th="Date fin">{formatDate(ticket.dateFin)}</td>
-                                <td data-th="Statut">{ticket.dateFin < currentDate ? <span className="badge text-bg-success">Actif</span> : <span className="badge text-bg-danger">Expiré</span>} </td>
-                                <td data-th="Action">
-                                    <button className="btn btn-outline-danger" onClick={() => alert("bientot")}>
-                                        Supprimer
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan="3" className="text-center">
-                                Aucune commande actuellement disponible.
-                            </td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+        <div>
+            {tickets.length > 0 ? (
+                <div className="row justify-content-start">
+                    {tickets.map((ticket) => (
+                        <>
+                            <div className="col-md-4 mb-3">
+                                <div className="card p-2" key={ticket.idTicket}>
+                                    <p className="m-0">
+                                        <strong>Ticket :</strong> {ticket.ticketTitle}
+                                    </p>
+                                    <p className="m-0">
+                                        <strong>Jeu :</strong> {ticket.gameTitle}
+                                    </p>
+                                    <p className="m-0">
+                                        <strong>Date Début :</strong> {formatDate(ticket.dateDebut)}
+                                    </p>
+                                    <p className="m-0">
+                                        <strong>Date Fin :</strong> {formatDate(ticket.dateFin)}
+                                    </p>
+                                    <p className="m-0">
+                                        <strong>Lot :</strong> {ticket.lotTitle ? truncate(ticket.lotTitle, 20) : "Aucun lot associé"}
+                                    </p>
+                                    <p className="m-0">
+                                        <strong>Statut :</strong> {isExpired(ticket.dateFin) ? <span className="badge text-bg-danger">Expiré</span> : <span className="badge text-bg-success">Actif</span>}
+                                    </p>
+                                    <div className="mt-2 mx-auto">
+                                        <BasicModal ticket={ticket} />
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    ))}
+                </div>
+            ) : (
+                <div className="mx-auto">Aucune commande disponible.</div>
+            )}
         </div>
     );
 };

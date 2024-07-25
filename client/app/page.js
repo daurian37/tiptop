@@ -8,12 +8,12 @@ import "../public/assets/css/style.css";
 import Banner from "./components/Banner/Banner";
 
 export default function Home() {
-  return (
-    <div>
-      <Header />
-      <Banner />
-      <HomeGrid />
-      <Footer />
-    </div>
-  );
+    return (
+        <div>
+            <Header />
+            <Banner />
+            <HomeGrid />
+            <Footer />
+        </div>
+    );
 }
