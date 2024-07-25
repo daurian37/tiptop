@@ -5,6 +5,7 @@ import Header from "../components/Header/Header.js";
 import Footer from "../components/Footer/Footer.js";
 import axios from "axios";
 import { useRouter } from "next/navigation.js";
+import { jwtDecode } from "jwt-decode";
 
 const login = () => {
     const [errors, setErrors] = useState({});
@@ -40,7 +41,16 @@ const login = () => {
             .then((res) => {
                 localStorage.setItem("token", res.data.token);
                 setIsLoggedIn(true);
-                router.push("/profile");
+
+                const token = res.data.token;
+                const user = jwtDecode(token);
+                localStorage.setItem("token", token);
+
+                if (user.category === 1) {
+                    router.push("/admin");
+                } else {
+                    router.push("/profile");
+                }
             })
             .catch((err) => {
                 setErrors({}); // Réinitialiser les erreurs précédentes
