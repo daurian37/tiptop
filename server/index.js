@@ -53,6 +53,20 @@ const verifyToken = (req, res, next) => {
     });
 };
 
+app.get("/users", (req, res) => {
+    const sql = "SELECT * FROM user";
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            return res.status(500).json(err);
+        }
+        if (result.length === 0) {
+            return res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
+        res.json(result);
+    });
+});
+
 app.get("/profile", verifyToken, (req, res) => {
     const sql = "SELECT * FROM user WHERE email = ?";
     const email = req.email;
@@ -103,6 +117,53 @@ app.put("/profile", verifyToken, (req, res) => {
     });
 });
 
+app.get("/tickets/users", (req, res) => {
+    const sqlUser = "SELECT * FROM user";
+    db.query(sqlUser, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        const userId = result[0].id;
+
+        const sqlTickets = `
+                SELECT 
+                    t.idTicket,
+                    t.title AS ticketTitle,
+                    j.title AS gameTitle,
+                    j.date_debut AS dateDebut,
+                    j.date_fin AS dateFin,
+                    l.title AS lotTitle,
+                    u.id AS userId,
+                    u.email AS userEmail,
+                    u.firstname AS userFirstname,
+                    u.lastname AS userLastname
+                FROM 
+                    ticket t
+                JOIN 
+                    jeu j ON t.idJeu = j.idJeu
+                LEFT JOIN 
+                    lot l ON t.idTicket = l.idTicket
+                JOIN
+                    user u ON t.idUser = u.id
+                WHERE 
+                    t.idUser = ?;
+
+            `;
+
+        db.query(sqlTickets, [userId], (err, tickets) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+
+            res.json({
+                user: result[0],
+                tickets: tickets,
+            });
+        });
+    });
+});
+
 app.get("/tickets", verifyToken, (req, res) => {
     const email = req.email;
     if (!email) {
@@ -123,19 +184,23 @@ app.get("/tickets", verifyToken, (req, res) => {
         const userId = result[0].id;
 
         const sqlTickets = `
-            SELECT 
-                t.idTicket,
-                t.title AS ticketTitle,
-                j.title AS gameTitle,
-                j.date_debut AS dateDebut,
-                j.date_fin AS dateFin
-            FROM 
-                ticket t
-            JOIN 
-                jeu j ON t.idJeu = j.idJeu
-            WHERE 
-                t.idUser = ?;
-        `;
+                SELECT 
+                    t.idTicket,
+                    t.title AS ticketTitle,
+                    j.title AS gameTitle,
+                    j.date_debut AS dateDebut,
+                    j.date_fin AS dateFin,
+                    l.title AS lotTitle
+                FROM 
+                    ticket t
+                JOIN 
+                    jeu j ON t.idJeu = j.idJeu
+                LEFT JOIN 
+                    lot l ON t.idTicket = l.idTicket
+                WHERE 
+                    t.idUser = ?;
+            `;
+
         db.query(sqlTickets, [userId], (err, tickets) => {
             if (err) {
                 return res.status(500).json({ error: err.message });
@@ -162,15 +227,14 @@ app.post("/login", (req, res) => {
             return res.status(401).json("Aucun utilisateur ne correspond à ce compte.");
         }
 
-        const passwordIsValid = bcrypt.compareSync(req.body.password, result[0].password);
+        const user = result[0];
+        const passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
 
         if (!passwordIsValid) {
             return res.status(401).json("Email ou mot de passe incorrect");
         }
-        // Créer un token avec l'email de l'utilisateur
-        const token = jwt.sign({ email: req.body.email }, "secret_key", {
-            expiresIn: "3h",
-        });
+
+        const token = jwt.sign({ email: req.body.email, category: user.idCategorie_user }, "secret_key");
 
         // Envoyer le token en réponse
         return res.json({ message: "Connexion réussie", token: token });
@@ -215,10 +279,10 @@ app.post("/register", (req, res) => {
 app.get("/api/checkTicketInLot/:ticketNumber", (req, res) => {
     const ticketNumber = req.params.ticketNumber;
     const query = `
-	SELECT lot.*
-	FROM lot
-	JOIN ticket ON lot.idTicket = ticket.idTicket
-	WHERE ticket.title = ?
+    SELECT lot.*
+    FROM lot
+    JOIN ticket ON lot.idTicket = ticket.idTicket
+    WHERE ticket.title = ?
 `;
 
     db.query(query, [ticketNumber], (err, results) => {
@@ -290,19 +354,6 @@ app.post("/api/lot", (req, res) => {
             });
         });
     });
-});
-
-// Définir la route pour récupérer les lots
-app.get('/api/totalLots', (req, res) => {
-  const query = 'SELECT * FROM lot';
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error('Erreur lors de la récupération des lots :', err);
-      res.status(500).send('Erreur serveur');
-      return;
-    }
-    res.json(results);
-  });
 });
 
 app.get("/protected-route", verifyToken, (req, res) => {
