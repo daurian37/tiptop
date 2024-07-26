@@ -58,7 +58,7 @@ function Gain() {
                 </div>
               </div>
             </div>
-            <a
+            {/* <a
               className="carousel-control-prev"
               href="#main_slider"
               role="button"
@@ -73,7 +73,7 @@ function Gain() {
               data-slide="next"
             >
               <i className="fa fa-arrow-right"></i>
-            </a>
+            </a> */}
           </div>
         </div>
       </div>

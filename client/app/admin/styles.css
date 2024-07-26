@@ -112,7 +112,7 @@ th {
 }
 
 .rwd-table tr:nth-child(odd):not(:first-child) {
-    background-color: #ebf3f9;
+    background-color: #fff;
 }
 
 .rwd-table th {
@@ -160,9 +160,6 @@ th {
 }
 
 @media screen and (min-width: 880px) {
-    .rwd-table tr:hover:not(:first-child) {
-        background-color: #f7f7f7;
-    }
     .rwd-table td:before {
         display: none;
     }
