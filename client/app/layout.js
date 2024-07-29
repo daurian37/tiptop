@@ -6,8 +6,8 @@ import Header from "./components/Header/Header";
 import "./globals.css";
 
 export const metadata = {
-  title: "Thé Tip Top",
-  description: "Jeu concours pour gagner des lots",
+  title: "Thé Tip Top Jeu concours",
+  description: "Jeu concours au tirage au sort, particpez et gagnez des cadeaux thé de luxe",
 };
 
 export default function RootLayout({ children }) {
