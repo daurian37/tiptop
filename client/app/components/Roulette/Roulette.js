@@ -193,7 +193,8 @@ const Roulette = () => {
   };
 
   return (
-    <div className="container-roulette">
+    <div className="page-container">
+      <div className="container-roulette">
       <div className="sidebar">
         <div className="container">
           <strong>Comment jouer ?</strong>
@@ -247,6 +248,8 @@ const Roulette = () => {
         />
       </div>
     </div>
+    </div>
+    
   );
 };
 

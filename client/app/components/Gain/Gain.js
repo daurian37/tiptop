@@ -2,7 +2,7 @@ import React from "react";
 
 function Gain() {
   return (
-    <div>
+    <div className="page-container">
       <div className="coffee_section layout_padding">
         <div className="container">
           <div className="row">

@@ -118,7 +118,6 @@ a {
   transition: 0.5s ease;
 }
 
-
 a.nav-link:hover {
     background-color: #ddd;
 }
@@ -331,6 +330,12 @@ button {
   font-size: 60px;
   color: #fff;
   font-weight: 800;
+}
+
+.page-container {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column; 
 }
 
 @media screen and (max-width: 768px) {
@@ -858,6 +863,7 @@ button.send_bt a:hover {
   background-image: url(../images/footer-bg.png);
   background-size: 100% 100%;
   padding: 90px 0px 0px 0px;
+  margin-top: auto;
 }
 
 .address_text {
@@ -907,7 +913,10 @@ button.send_bt a:hover {
 .padding_left_10 {
   padding-left: 10px;
 }
-
+ul,
+li {
+  list-style: none;
+}
 .social_icon {
   width: 100%;
   display: inline-block;

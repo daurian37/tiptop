@@ -1,11 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Gain from "../Gain/Gain";
 import Modal from "react-modal";
 import Cookies from "js-cookie";
+import Link from "next/link";
 import "../../../public/assets/css/modal.css";
 
 function HomeGrid() {
-  const [modalIsOpen, setModalIsOpen] = useState(!Cookies.get("cookieConsent"));
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
+  useEffect(() => {
+    const cookieConsent = Cookies.get("cookieConsent");
+    if (cookieConsent) {
+      setModalIsOpen(false);
+    } else {
+      setModalIsOpen(true);
+    }
+  }, []);
 
   const closeModal = () => {
     setModalIsOpen(false);
@@ -13,6 +23,11 @@ function HomeGrid() {
 
   const acceptCookies = () => {
     Cookies.set("cookieConsent", "true", { expires: 365 });
+    closeModal();
+  };
+
+  const rejectCookies = () => {
+    Cookies.set("cookieConsent", "false", { expires: 365 });
     closeModal();
   };
 
@@ -41,24 +56,27 @@ function HomeGrid() {
 
       <div className="mb-5">
         <Modal
-           isOpen={modalIsOpen}
-           onRequestClose={closeModal}
-           className="react-modal-content"
-           overlayClassName="react-modal-overlay"
-           contentLabel="Cookie Consent"
+          isOpen={modalIsOpen}
+          onRequestClose={closeModal}
+          shouldCloseOnOverlayClick={false}
+          className="react-modal-content"
+          overlayClassName="react-modal-overlay"
+          contentLabel="Cookie Consent"
         >
-          <h2>Nous utilisons des cookies</h2>
+          <h2>Cher(e) visiteur(se) !</h2>
           <p>
-            Ce site utilise des cookies pour améliorer l'expérience utilisateur.{" "}
-            <a
-              href="/politique-de-confidentialite"
-              style={{ color: "#4e9c81" }}
-            >
+            Nous utilisons des cookies pour vous offrir une expérience optimale
+            sur notre site.{" "}
+            <Link className="link" href="/politique-de-confidentialite">
               En savoir plus
-            </a>
+            </Link>
           </p>
-          <button onClick={acceptCookies} className="btn-cookies accept">J'accepte</button>
-          <button onClick={closeModal} className="btn-cookies reject">Je refuse</button>
+          <button onClick={acceptCookies} className="btn-cookies accept">
+            J'accepte
+          </button>
+          <button onClick={rejectCookies} className="btn-cookies reject">
+            Je refuse
+          </button>
         </Modal>
         <Gain />
       </div>
