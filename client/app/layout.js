@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-page-custom-font */
 /* eslint-disable @next/next/no-css-tags */
 /* eslint-disable @next/next/no-sync-scripts */
+import Footer from "./components/Footer/Footer";
+import Header from "./components/Header/Header";
 import "./globals.css";
 
 export const metadata = {
@@ -50,7 +52,9 @@ export default function RootLayout({ children }) {
       </head>
 
       <body>
+        <Header/>
         <div id="root" className="body">{children}</div>
+        <Footer/>
       </body>
     </html>
   );
