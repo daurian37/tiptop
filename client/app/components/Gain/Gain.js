@@ -24,7 +24,7 @@ function Gain() {
                       </div>
                       <h3 className="types_text">Infuseur de thé</h3>
                       <p className="looking_text">
-                        looking at its layout. The point of
+                      Découvrez notre infuseur de thé artisanal, un accessoire indispensable pour tous les amateurs de thé. Conçu pour optimiser la libération des arômes, cet infuseur vous permet de profiter pleinement de chaque tasse de thé bio.
                       </p>
                     </div>
                     <div className="col-lg-3 col-md-6">
@@ -33,7 +33,7 @@ function Gain() {
                       </div>
                       <h3 className="types_text">Thé détox</h3>
                       <p className="looking_text">
-                        looking at its layout. The point of
+                      Faites une pause bien-être avec notre thé détox bio, spécialement élaboré pour purifier et revitaliser votre corps. Composé d'ingrédients naturels et biologiques, ce thé détox est parfait pour ceux qui cherchent à allier plaisir et santé.
                       </p>
                     </div>
                     <div className="col-lg-3 col-md-6">
@@ -42,7 +42,7 @@ function Gain() {
                       </div>
                       <h3 className="types_text">Thé signature</h3>
                       <p className="looking_text">
-                        looking at its layout. The point of
+                      Découvrez l'authenticité et le raffinement avec notre thé signature. Chaque mélange signature est le fruit de notre savoir-faire artisanal et de notre passion pour le thé bio.
                       </p>
                     </div>
                     <div className="col-lg-3 col-md-6">
@@ -51,7 +51,7 @@ function Gain() {
                       </div>
                       <h3 className="types_text">Coffret découverte</h3>
                       <p className="looking_text">
-                        looking at its layout. The point of
+                      Explorez l'univers riche et varié de Thé Tip Top avec notre coffret découverte. Ce coffret contient une sélection de nos meilleurs thés bios, y compris des thés détox, des infusions, et des mélanges signature.
                       </p>
                     </div>
                   </div>
