@@ -37,7 +37,7 @@ function HomeGrid() {
         <div className="container">
           <div className="row align-items-center">
             <div className="col-lg-6">
-              <h1 className="presentation_jeu">Présentation du jeu-concours</h1>
+              <h2 className="presentation_jeu">Présentation du jeu-concours</h2>
               <p>
                 A l'occasion de l'ouverture de notre 10ème boutique à Nice. Nous
                 organisons un jeu concours par tirage au sort pour promouvoir
@@ -48,7 +48,7 @@ function HomeGrid() {
               </div>
             </div>
             <div className="col-lg-6">
-              <img src="/assets/images/jeu-concours.jpg" alt="" />
+              <img src="/assets/images/jeu-concours.jpg" alt="image de présentation du jeu concours" />
             </div>
           </div>
         </div>

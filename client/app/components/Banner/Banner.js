@@ -35,7 +35,7 @@ function Banner() {
                         </h1>
                         <p className="banner_text">
                           A l'occasion de l'ouverture de notre 10ème boutique à
-                          Nice. Nous organisons un jeu concours par tirage au
+                          Nice. Nous organisons un jeu concours tirage au
                           sort pour promouvoir nos produits.
                         </p>
                         <div className="btn_main mt-3">

@@ -7,7 +7,7 @@ const About = () => {
         <div className="container">
           <div className="row">
             <div className="col-md-12">
-              <h1 className="about_taital">à propos du jeu</h1>
+              <h2 className="about_taital">à propos du jeu</h2>
               <div className="bulit_icon">
                 <img src="assets/images/bulit-icon.png" />
               </div>
@@ -15,17 +15,17 @@ const About = () => {
           </div>
           <div className="about_section_2 layout_padding">
             <div className="image_iman">
-              <img src="assets/images/about-img.png" className="about_img" />
+              <img src="assets/images/about-img.png" className="about_img" alt="image de présentation du jeu concours" />
             </div>
             <div className="about_taital_box">
-              <h4 className="about_taital_1">Présentation du jeu-concours</h4>
+              <h3 className="about_taital_1">Présentation du jeu-concours</h3>
               <p className="about_text">
                 A l'occasion de l'ouverture de notre 10ème boutique à Nice. Nous
-                organisons un jeu concours par tirage au sort pour promouvoir
+                organisons un jeu concours tirage au sort pour promouvoir
                 nos produits. La participation est ouverte à tout client ayant
                 un ticket de caisse ou une facture supérieure à 49€.
                 <br />
-                Participez dès maintenant pour gagner des prix fantastiques !{" "}
+                Participez dès maintenant pour gagner des cadeaux thé de luxe !
                 <br />
                 En prime, vous serez automatiquement inscrit pour avoir la
                 chance de remporter un an entier de thé d'une valeur de 360€
