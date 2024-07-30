@@ -2,35 +2,68 @@ import React from "react";
 
 function Footer() {
   return (
-    <div>
-
-      
-      <div className="footer_section layout_padding">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-12">
-              <h6 className="address_text">Addresse</h6>
-              <p className="footer_text">
-              Siège social : 18 rue Léon Frot, 75011 Paris <br/>
-              Tout droits reservés 
-              </p>
-              
-              <div className="location_text">
-                <ul>
-                  <li>
-                    <a href="#">
-                      <i className="fa fa-phone"></i>
-                      <span className="padding_left_10">+01 1234567890</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i className="fa fa-envelope"></i>
-                      <span className="padding_left_10">demo@gmail.com</span>
-                    </a>
-                  </li>
-                </ul>
-              </div>
+    <div className="footer_section layout_padding">
+      <div className="container">
+        <div className="row">
+          <div className="col-md-12">
+            <p className="footer_text mb-4">
+              Copyright © 2024 Thé Tip Top | Powered by
+            </p>
+            <div className="footer_links mb-4">
+              <ul>
+                <li>
+                  <a href="/contact">Nous contacter</a>
+                </li>
+                <li>
+                  <a href="#">Service client</a>
+                </li>
+                <li>
+                  <a href="/politique-de-confidentialite">Politique de confidentialité</a>
+                </li>
+                <li>
+                  <a href="/cgv">CGV</a>
+                </li>
+                <li>
+                  <a href="/cgu">CGU</a>
+                </li>
+              </ul>
+            </div>
+            <div className="social_icon mb-4">
+              <ul>
+                <li>
+                  <a
+                    href="https://www.facebook.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <i className="fa-brands fa-facebook" aria-hidden="true"></i>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.instagram.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <i
+                      className="fa-brands fa-instagram"
+                      aria-hidden="true"
+                    ></i>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.twitter.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <i
+                      className="fa-brands fa-x-twitter"
+                      aria-hidden="true"
+                    ></i>
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -40,3 +73,4 @@ function Footer() {
 }
 
 export default Footer;
+

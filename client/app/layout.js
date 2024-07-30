@@ -1,16 +1,18 @@
 /* eslint-disable @next/next/no-page-custom-font */
 /* eslint-disable @next/next/no-css-tags */
 /* eslint-disable @next/next/no-sync-scripts */
+"use client";
+import { usePathname } from "next/navigation";
 import Footer from "./components/Footer/Footer";
 import Header from "./components/Header/Header";
 import "./globals.css";
-
-export const metadata = {
-  title: "Thé Tip Top Jeu concours",
-  description: "Jeu concours au tirage au sort, particpez et gagnez des cadeaux thé de luxe",
-};
+import { metadata } from "./metadata";
 
 export default function RootLayout({ children }) {
+  const pathname = usePathname();
+  const hiddenFooterPaths = ["/profile", "/admin"];
+  const isFooterVisible = !hiddenFooterPaths.includes(pathname);
+
   return (
     <html lang="fr">
       <head>
@@ -20,7 +22,7 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
         <meta name="keywords" content="" />
-        <meta name="description" content="" />
+        <meta name="description" content={metadata.description} />
         <meta name="author" content="" />
         <link rel="icon" href="images/fevicon.png" type="image/gif" />
         <link
@@ -41,7 +43,7 @@ export default function RootLayout({ children }) {
 
         <link
           rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
         />
 
         <script
@@ -52,9 +54,11 @@ export default function RootLayout({ children }) {
       </head>
 
       <body>
-        <Header/>
-        <div id="root" className="body">{children}</div>
-        <Footer/>
+        <Header />
+        <div id="root" className="body">
+          {children}
+        </div>
+        {isFooterVisible && <Footer />}
       </body>
     </html>
   );
