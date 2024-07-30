@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import DashboardAdmin from "./DashboardAdmin";
 import OrdersAdmin from "./OrdersAdmin";
+import LotsAdmin from "./LotsAdmin";
 
 const NavAdmin = () => {
     const [currentSection, setCurrentSection] = useState("dashboardAdmin");
@@ -12,8 +13,8 @@ const NavAdmin = () => {
                 return <DashboardAdmin />;
             case "ordersAdmin":
                 return <OrdersAdmin />;
-            // case "accountDetails":
-            //     return <AccountDetails />;
+            case "lotsAdmin":
+                return <LotsAdmin />;
             default:
                 return <DashboardAdmin />;
         }
@@ -41,9 +42,9 @@ const NavAdmin = () => {
                     <li className={`nav-item ${currentSection === "ordersAdmin" ? "active bg-secondary text-light" : ""}`} onClick={() => handleTabChange("ordersAdmin")}>
                         Commandes
                     </li>
-                    {/* <li className={`nav-item ${currentSection === "accountDetails" ? "active bg-secondary text-light" : ""}`} onClick={() => handleTabChange("accountDetails")}>
-                        Détails du compte
-                    </li> */}
+                    <li className={`nav-item ${currentSection === "lotsAdmin" ? "active bg-secondary text-light" : ""}`} onClick={() => handleTabChange("lotsAdmin")}>
+                        Lots
+                    </li>
                 </ul>
             </nav>
             <main className="main-content flex-grow-1">{renderSectionAdmin()}</main>

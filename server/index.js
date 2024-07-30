@@ -1,35 +1,16 @@
 const express = require("express");
-const mysql = require("mysql");
-const multer = require("multer");
-const path = require("path");
 const cors = require("cors");
 const env = require("dotenv");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const db = require("./db");
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 env.config();
 
-// Configuration de la base de données MySQL (serveur local)
-const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
-});
-
 const port = 8000 || process.env.PORT;
-
-db.connect((err) => {
-    if (err) {
-        console.error("Erreur de connexion à la base de données :", err);
-        return;
-    }
-    console.log("Connecté à la base de données MySQL");
-});
 
 app.get("/", (req, res) => {
     res.send("Welcome ");
@@ -148,7 +129,6 @@ app.get("/tickets/users", (req, res) => {
                     user u ON t.idUser = u.id
                 WHERE 
                     t.idUser = ?;
-
             `;
 
         db.query(sqlTickets, [userId], (err, tickets) => {
@@ -210,6 +190,57 @@ app.get("/tickets", verifyToken, (req, res) => {
                 user: result[0],
                 tickets: tickets,
             });
+        });
+    });
+});
+
+app.get("/lots/users", (req, res) => {
+    const sql = `
+        SELECT l.idLot, l.title AS lotTitle, t.title AS ticketTitle
+        FROM lot l
+        LEFT JOIN ticket t ON l.idTicket = t.idTicket
+    `;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        res.json(result);
+    });
+});
+
+app.get("/lots", verifyToken, (req, res) => {
+    const email = req.email;
+    if (!email) {
+        return res.status(400).json({ message: "Email requis" });
+    }
+
+    const sqlUser = "SELECT * FROM user WHERE email = ?";
+    db.query(sqlUser, [email], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        if (result.length === 0) {
+            return res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
+
+        const userId = result[0].id;
+
+        const sql = `
+            SELECT l.idLot, l.title AS lotTitle, t.title AS ticketTitle
+            FROM lot l
+            LEFT JOIN ticket t ON l.idTicket = t.idTicket
+            WHERE t.idUser = ?
+        `;
+
+        db.query(sql, [userId], (err, lots) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+
+            res.json({ user: result[0], lots: lots });
         });
     });
 });
@@ -276,27 +307,61 @@ app.post("/register", (req, res) => {
 });
 
 // Vérification si le ticket existe déjà dans la table lot
-app.get("/api/checkTicketInLot/:ticketNumber", (req, res) => {
+app.get("/api/checkTicketInLot/:ticketNumber", verifyToken, (req, res) => {
     const ticketNumber = req.params.ticketNumber;
-    const query = `
-    SELECT lot.*
-    FROM lot
-    JOIN ticket ON lot.idTicket = ticket.idTicket
-    WHERE ticket.title = ?
-`;
+    const email = req.email;
 
-    db.query(query, [ticketNumber], (err, results) => {
+    if (!email) {
+        return res.status(400).json({ message: "Email requis" });
+    }
+
+    // Requête pour obtenir l'utilisateur par son email
+    const sqlUser = "SELECT id FROM user WHERE email = ?";
+
+    db.query(sqlUser, [email], (err, result) => {
         if (err) {
-            console.error("Erreur lors de la vérification du ticket :", err);
-            res.status(500).json({ error: "Erreur lors de la vérification du ticket" });
-            return;
+            console.error("Erreur lors de la récupération de l'utilisateur :", err);
+            return res.status(500).json({ error: "Erreur lors de la récupération de l'utilisateur" });
         }
 
-        if (results.length > 0) {
-            res.json({ exists: true });
-        } else {
-            res.json({ exists: false });
+        if (result.length === 0) {
+            return res.status(404).json({ message: "Utilisateur non trouvé" });
         }
+
+        const userId = result[0].id;
+
+        // Requête pour vérifier si le ticket appartient à l'utilisateur et s'il est dans un lot
+        const query = `
+            SELECT lot.*
+            FROM lot
+            JOIN ticket ON lot.idTicket = ticket.idTicket
+            WHERE ticket.title = ? AND ticket.idUser = ?
+        `;
+
+        db.query(query, [ticketNumber, userId], (err, results) => {
+            if (err) {
+                console.error("Erreur lors de la vérification du ticket :", err);
+                return res.status(500).json({ error: "Erreur lors de la vérification du ticket" });
+            }
+
+            if (results.length > 0) {
+                res.json({ exists: true });
+            } else {
+                const userTicketQuery = "SELECT * FROM ticket WHERE title = ? AND idUser = ?";
+                db.query(userTicketQuery, [ticketNumber, userId], (err, userTicketResults) => {
+                    if (err) {
+                        console.error("Erreur lors de la vérification du ticket utilisateur :", err);
+                        return res.status(500).json({ error: "Erreur lors de la vérification du ticket utilisateur" });
+                    }
+
+                    if (userTicketResults.length === 0) {
+                        res.status(403).json({ message: "Ce ticket ne vous appartient pas." });
+                    } else {
+                        res.json({ exists: false });
+                    }
+                });
+            }
+        });
     });
 });
 
