@@ -2,31 +2,31 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import ResponsivePagination from "react-responsive-pagination";
 
-const DashboardAdmin = () => {
+const LotsAdmin = () => {
     const [pageNumber] = useState(15);
-    const [users, setUsers] = useState([]);
+    const [lots, setLots] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         axios
-            .get("http://localhost:8000/users")
+            .get("http://localhost:8000/lots/users")
             .then((response) => {
-                const userList = response.data;
-                setUsers(userList);
+                const lotList = response.data;
+                setLots(lotList);
 
                 // Calculer le nombre total de pages
-                const pages = Math.ceil(userList.length / pageNumber);
+                const pages = Math.ceil(lotList.length / pageNumber);
                 setTotalPages(pages);
             })
-            .catch((err) => {
-                console.log(err);
+            .catch((error) => {
+                console.log(error);
             });
     }, [pageNumber]);
 
-    const indexOfLastUser = currentPage * pageNumber;
-    const indexOfFirstUser = indexOfLastUser - pageNumber;
-    const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+    const indexOfLastLot = currentPage * pageNumber;
+    const indexOfFirstLot = indexOfLastLot - pageNumber;
+    const currentLots = lots.slice(indexOfFirstLot, indexOfLastLot);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -34,20 +34,22 @@ const DashboardAdmin = () => {
 
     return (
         <div>
-            <h3 className="text-center">Liste des utilisateurs</h3>
+            <h3 className="text-center">Liste des lots</h3>
             <table className="rwd-table">
                 <tbody>
                     <tr>
-                        <th>Nom</th>
-                        <th>Prénom</th>
-                        <th>Email</th>
-                        <th>Action</th>
+                        <th className="text-center">Titre</th>
+                        <th className="text-center">Ticket</th>
+                        <th className="text-center">Action</th>
                     </tr>
-                    {currentUsers.map((user) => (
-                        <tr key={user.id}>
-                            <td data-th="nom">{user.lastname}</td>
-                            <td data-th="prenom">{user.firstname}</td>
-                            <td data-th="Email">{user.email}</td>
+                    {currentLots.map((lot) => (
+                        <tr key={lot.id}>
+                            <td className="text-center" data-th="titre">
+                                {lot.lotTitle}
+                            </td>
+                            <td className="text-center" data-th="ticket">
+                                {lot.ticketTitle}
+                            </td>
                             <td className="text-center" data-th="Action">
                                 <div className="d-flex justify-content-around" style={{ cursor: "pointer" }}>
                                     <i class="fa fa-trash text-danger" aria-hidden="true" onClick={() => alert("bientot")}></i>
@@ -65,4 +67,4 @@ const DashboardAdmin = () => {
     );
 };
 
-export default DashboardAdmin;
+export default LotsAdmin;

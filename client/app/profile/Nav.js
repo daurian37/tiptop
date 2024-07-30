@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Dashboard from "./Dashboard";
 import Orders from "./Orders";
 import AccountDetails from "./AccountDetails";
+import Lots from "./Lots";
 
 const Nav = () => {
     const [currentSection, setCurrentSection] = useState("dashboard");
@@ -15,6 +16,8 @@ const Nav = () => {
                 return <Orders />;
             case "accountDetails":
                 return <AccountDetails />;
+            case "lots":
+                return <Lots />;
             default:
                 return <Dashboard />;
         }
@@ -40,7 +43,10 @@ const Nav = () => {
                         Tableau de bord
                     </li>
                     <li className={`nav-item ${currentSection === "orders" ? "active bg-secondary text-light" : ""}`} onClick={() => handleTabChange("orders")}>
-                        Commandes
+                        Mes tickets
+                    </li>
+                    <li className={`nav-item ${currentSection === "lots" ? "active bg-secondary text-light" : ""}`} onClick={() => handleTabChange("lots")}>
+                        Mes Lots
                     </li>
                     <li className={`nav-item ${currentSection === "accountDetails" ? "active bg-secondary text-light" : ""}`} onClick={() => handleTabChange("accountDetails")}>
                         Détails du compte
