@@ -1,8 +1,8 @@
 const db = require("./db");
 const { faker } = require("@faker-js/faker");
 
-const NUM_USERS = 200;
-const NUM_TICKETS = 500;
+const NUM_USERS = 50;
+const NUM_TICKETS = 100;
 const PASSWORD_HASH = "$2a$10$Bk87b/oscXVkcMLPa1rkFulwPwM1drJwhWvRkSwlYhcenyuzkndN6";
 
 async function createUsers() {
