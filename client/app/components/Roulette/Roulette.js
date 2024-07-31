@@ -4,7 +4,13 @@ import swal from "sweetalert";
 import "../../../public/assets/css/roulette.css";
 import Confetti from "../utils/confetti";
 
-const data = [{ option: "Infuseur à Thé" }, { option: "Thé détox" }, { option: "Thé signature" }, { option: "Coffret D mini" }, { option: "Coffret D max" }];
+const data = [
+    { option: "Infuseur à Thé", weight: 60 },
+    { option: "Thé détox", weight: 20 },
+    { option: "Thé signature", weight: 10 },
+    { option: "Coffret D mini", weight: 6 },
+    { option: "Coffret D max", weight: 4 }
+];
 
 const Roulette = () => {
     const [mustSpin, setMustSpin] = useState(false);
@@ -15,108 +21,50 @@ const Roulette = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [totalLots, setTotalLots] = useState(0);
     const [isConfirmed, setIsConfirmed] = useState(false);
-
-    const [availablePrizes, setAvailablePrizes] = useState({
-        infuseur: 0,
-        detox: 0,
-        signature: 0,
-        mini: 0,
-        max: 0,
-    });
+    const [lotCounts, setLotCounts] = useState({});
 
     useEffect(() => {
         const fetchTotalLots = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/api/totalLots`);
+                const response = await fetch("http://localhost:8000/api/totalLots");
                 const result = await response.json();
                 setTotalLots(result.length);
+                const counts = result.reduce((acc, lot) => {
+                    acc[lot.title] = (acc[lot.title] || 0) + 1;
+                    return acc;
+                }, {});
+                setLotCounts(counts);
             } catch (error) {
                 console.error("Erreur lors de la récupération du nombre total de lots :", error);
             }
         };
 
-        const fetchAvailablePrizes = async () => {
-            try {
-                const response = await fetch(`http://localhost:8000/api/totalLots`);
-                const result = await response.json();
-
-                if (Array.isArray(result)) {
-                    const newAvailablePrizes = { infuseur: 0, detox: 0, signature: 0, mini: 0, max: 0 };
-                    result.forEach((lot) => {
-                        switch (lot.title) {
-                            case "Infuseur à Thé":
-                                newAvailablePrizes.infuseur++;
-                                break;
-                            case "Thé détox":
-                                newAvailablePrizes.detox++;
-                                break;
-                            case "Thé signature":
-                                newAvailablePrizes.signature++;
-                                break;
-                            case "Coffret D mini":
-                                newAvailablePrizes.mini++;
-                                break;
-                            case "Coffret D max":
-                                newAvailablePrizes.max++;
-                                break;
-                            default:
-                                break;
-                        }
-                    });
-                    setAvailablePrizes(newAvailablePrizes);
-                } else {
-                    console.error("Réponse inattendue:", result);
-                }
-            } catch (error) {
-                console.error("Erreur lors de la récupération des lots disponibles :", error);
-            }
-        };
-
         fetchTotalLots();
-        fetchAvailablePrizes();
     }, []);
 
+    const getWeightedPrizeNumber = () => {
+        const totalWeight = data.reduce((sum, item) => sum + item.weight, 0);
+        const random = Math.floor(Math.random() * totalWeight);
+        let weightSum = 0;
+
+        for (let i = 0; i < data.length; i++) {
+            weightSum += data[i].weight;
+            if (random < weightSum) {
+                return i;
+            }
+        }
+        return 0;
+    };
+
     const handleSpinClick = () => {
-        if (totalLots >= 100) {
+        if (totalLots == 20) {
             setErrorMessage("Tous les lots ont été attribués. Merci de revenir plus tard.");
             return;
         }
 
-        const newPrizeNumber = getPrizeNumberBasedOnAvailability();
-        if (newPrizeNumber === null) {
-            setErrorMessage("Erreur lors du tirage. Veuillez réessayer.");
-            return;
-        }
-
+        const newPrizeNumber = getWeightedPrizeNumber();
         setPrizeNumber(newPrizeNumber);
         setMustSpin(true);
-    };
-
-    const getPrizeNumberBasedOnAvailability = () => {
-        const totalTickets = 100;
-        const availablePrizesList = [];
-
-        if (availablePrizes.infuseur < 0.6 * totalTickets) {
-            availablePrizesList.push(0); // Infuseur à Thé
-        }
-        if (availablePrizes.detox < 0.2 * totalTickets) {
-            availablePrizesList.push(1); // Thé détox
-        }
-        if (availablePrizes.signature < 0.1 * totalTickets) {
-            availablePrizesList.push(2); // Thé signature
-        }
-        if (availablePrizes.mini < 0.06 * totalTickets) {
-            availablePrizesList.push(3); // Coffret D mini
-        }
-        if (availablePrizes.max < 0.04 * totalTickets) {
-            availablePrizesList.push(4); // Coffret D max
-        }
-
-        if (availablePrizesList.length === 0) {
-            return null;
-        }
-
-        return availablePrizesList[Math.floor(Math.random() * availablePrizesList.length)];
     };
 
     const handleTicketValidation = async (e) => {
@@ -167,7 +115,7 @@ const Roulette = () => {
 
     const savePrizeToDatabase = async (title, idTicket) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/lot`, {
+            const response = await fetch("http://localhost:8000/api/lot", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -208,15 +156,15 @@ const Roulette = () => {
                             <li>3. Tournez la roulette et gagnez un prix</li>
                         </ol>
 
-                        <strong>Comment récupérer votre prix ?</strong>
+                        <strong>Comment voir votre gain ?</strong>
                         <p>
-                            Une fois que vous avez gagné, dirigez-vous dans la page <b>Mon profil</b> puis <b>Mes participations</b> vous trouverez les détails de votre gain et les instructions pour le récupérer.
+                            Une fois que vous avez gagné, dirigez-vous dans la page <b>Mon profil</b> puis <b>Mes lots</b> vous trouverez les détails de votre gain.
                         </p>
 
                         <form onSubmit={handleTicketValidation} className="position-relative">
                             <input className="form-control" type="text" placeholder="Code ticket" required value={ticketNumber} onChange={(e) => setTicketNumber(e.target.value)} />
                             <button type="submit" className="submit-btn">
-                                <i class="fa fa-search" aria-hidden="true"></i>
+                                <i className="fa fa-search" aria-hidden="true"></i>
                             </button>
                         </form>
 
