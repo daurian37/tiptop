@@ -77,7 +77,7 @@ const Roulette = () => {
     }, []);
 
     const handleSpinClick = () => {
-        if (totalLots >= 20) {
+        if (totalLots >= 100) {
             setErrorMessage("Tous les lots ont été attribués. Merci de revenir plus tard.");
             return;
         }
@@ -93,7 +93,7 @@ const Roulette = () => {
     };
 
     const getPrizeNumberBasedOnAvailability = () => {
-        const totalTickets = 20;
+        const totalTickets = 100;
         const availablePrizesList = [];
 
         if (availablePrizes.infuseur < 0.6 * totalTickets) {
