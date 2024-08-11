@@ -5,12 +5,24 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const db = require("./db");
 
+// A decomenter avant de lancer la création de l'image docker
+// const mysql = require("mysql");
+
 const app = express();
 app.use(express.json());
 app.use(cors());
 env.config();
 
 const port = 8000 || process.env.PORT;
+
+// Configuration de la base de données MySQL (pour lancer le serveur Docker)
+// const db = mysql.createConnection({
+//   host: "db",
+//   user: "tiptop_user",
+//   password: "password",
+//   database: "tiptop",
+//   port: 3306,
+// });
 
 app.get("/", (req, res) => {
     res.send("Welcome ");
