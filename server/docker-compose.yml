@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  server:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: tiptop
+      DB_PORT: 3306
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+
+  db:
+    image: mariadb:11.3
+    environment:
+      MARIADB_USER: tiptop_user
+      MARIADB_PASSWORD: password
+      MARIADB_DATABASE: tiptop
+      MARIADB_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
+volumes:
+  db-data:
