@@ -10,7 +10,7 @@ const GainsAdmin = () => {
 
     useEffect(() => {
         axios
-            .get("https://tiptop-snowy.vercel.app/lots/users")
+            .get("https://tiptop-server.vercel.app/lots/users")
             .then((response) => {
                 const lotList = response.data;
                 setLots(lotList);

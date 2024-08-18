@@ -12,7 +12,7 @@ const GameAdmin = () => {
 
     useEffect(() => {
         axios
-            .get("https://tiptop-snowy.vercel.app/jeu")
+            .get("https://tiptop-server.vercel.app/jeu")
             .then((response) => {
                 const jeuList = response.data;
                 setJeu(jeuList);
@@ -49,7 +49,7 @@ const GameAdmin = () => {
 
     const handleSaveJeu = (idJeu) => {
         axios
-            .put(`https://tiptop-snowy.vercel.app/api/jeu/${idJeu}`, { title: editedJeu.title })
+            .put(`https://tiptop-server.vercel.app/api/jeu/${idJeu}`, { title: editedJeu.title })
             .then((response) => {
                 const updatedJeu = response.data;
                 const updatedJeux = jeux.map((jeu) => (jeu.idJeu === updatedJeu.idJeu ? updatedJeu : jeu));

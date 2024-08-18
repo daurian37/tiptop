@@ -28,7 +28,7 @@ const Roulette = () => {
     useEffect(() => {
         const fetchTotalLots = async () => {
             try {
-                const response = await fetch("https://tiptop-snowy.vercel.app/api/totalLots");
+                const response = await fetch("https://tiptop-server.vercel.app/api/totalLots");
                 const result = await response.json();
                 setTotalLots(result.length);
                 const counts = result.reduce((acc, lot) => {
@@ -77,12 +77,12 @@ const Roulette = () => {
             const token = localStorage.getItem("token");
 
             // Valider le ticket
-            const response = await fetch(`https://tiptop-snowy.vercel.app/api/ticket/${ticketNumber}`);
+            const response = await fetch(`https://tiptop-server.vercel.app/api/ticket/${ticketNumber}`);
             const result = await response.json();
 
             if (result.valid) {
                 // Vérifier si le ticket existe déjà dans la table lot
-                const checkResponse = await fetch(`https://tiptop-snowy.vercel.app/api/checkTicketInLot/${ticketNumber}`, {
+                const checkResponse = await fetch(`https://tiptop-server.vercel.app/api/checkTicketInLot/${ticketNumber}`, {
                     headers: {
                         Authorization: token,
                     },
@@ -117,7 +117,7 @@ const Roulette = () => {
 
     const savePrizeToDatabase = async (title, idTicket) => {
         try {
-            const response = await fetch("https://tiptop-snowy.vercel.app/api/lot", {
+            const response = await fetch("https://tiptop-server.vercel.app/api/lot", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

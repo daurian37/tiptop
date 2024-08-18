@@ -39,7 +39,7 @@ const Subscribe = () => {
         }
 
         axios
-            .post("https://tiptop-snowy.vercel.app/register", value)
+            .post("https://tiptop-server.vercel.app/register", value)
             .then((res) => {
                 router.push("/login");
             })

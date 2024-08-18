@@ -35,7 +35,7 @@ const login = () => {
         }
 
         axios
-            .post("https://tiptop-snowy.vercel.app/login", value)
+            .post("https://tiptop-server.vercel.app/login", value)
             .then((res) => {
                 localStorage.setItem("token", res.data.token);
                 setIsLoggedIn(true);
