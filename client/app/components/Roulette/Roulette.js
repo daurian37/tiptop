@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Wheel } from "react-custom-roulette";
 import swal from "sweetalert";
 import "../../../public/assets/css/roulette.css";
 import Confetti from "../utils/confetti";
+import dynamic from "next/dynamic";
+
+const Wheel = dynamic(() => import("react-custom-roulette").then((mod) => mod.Wheel), { ssr: false });
 
 const data = [
     { option: "Infuseur à Thé", weight: 60 },
     { option: "Thé détox", weight: 20 },
     { option: "Thé signature", weight: 10 },
     { option: "Coffret D mini", weight: 6 },
-    { option: "Coffret D max", weight: 4 }
+    { option: "Coffret D max", weight: 4 },
 ];
 
 const Roulette = () => {
