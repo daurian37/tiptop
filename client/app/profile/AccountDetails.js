@@ -25,7 +25,7 @@ const AccountDetails = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         axios
-            .get("http://localhost:8000/profile", {
+            .get("https://tiptop-snowy.vercel.app/profile", {
                 headers: {
                     Authorization: token,
                 },
@@ -72,7 +72,7 @@ const AccountDetails = () => {
         };
 
         axios
-            .put("http://localhost:8000/profile", data, {
+            .put("https://tiptop-snowy.vercel.app/profile", data, {
                 headers: {
                     Authorization: token,
                 },
