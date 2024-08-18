@@ -191,6 +191,8 @@ const Roulette = () => {
                 icon: "success",
                 buttons: false,
             });
+            setTicketNumber("");
+            setIsValidTicket(false);
         } catch (error) {
             console.error("Erreur lors de l'enregistrement du lot (client):", error.message);
         }

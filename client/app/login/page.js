@@ -46,6 +46,8 @@ const login = () => {
 
                 if (user.category === 1) {
                     window.location.href = "/admin";
+                } else if (user.category === 3) {
+                    window.location.href = "/employee";
                 } else {
                     window.location.href = "/";
                 }

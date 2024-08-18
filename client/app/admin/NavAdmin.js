@@ -3,6 +3,9 @@ import React, { useEffect, useState } from "react";
 import DashboardAdmin from "./DashboardAdmin";
 import OrdersAdmin from "./OrdersAdmin";
 import LotsAdmin from "./LotsAdmin";
+import GainsAdmin from "./GainsAdmin";
+import TicketsAdmin from "./TicketAdmin";
+import GameAdmin from "./GameAdmin";
 
 const NavAdmin = () => {
     const [currentSection, setCurrentSection] = useState("dashboardAdmin");
@@ -11,8 +14,14 @@ const NavAdmin = () => {
         switch (currentSection) {
             case "dashboardAdmin":
                 return <DashboardAdmin />;
+            case "ticketsAdmin":
+                return <TicketsAdmin />;
             case "ordersAdmin":
                 return <OrdersAdmin />;
+            case "gainsAdmin":
+                return <GainsAdmin />;
+            case "gameAdmin":
+                return <GameAdmin />;
             case "lotsAdmin":
                 return <LotsAdmin />;
             default:
@@ -39,11 +48,20 @@ const NavAdmin = () => {
                     <li className={`nav-item ${currentSection === "dashboardAdmin" ? "active bg-secondary text-light" : ""}`} onClick={() => handleTabChange("dashboardAdmin")}>
                         Tableau de bord
                     </li>
+                    <li className={`nav-item ${currentSection === "ticketsAdmin" ? "active bg-secondary text-light" : ""}`} onClick={() => handleTabChange("ticketsAdmin")}>
+                        Les tickets
+                    </li>
                     <li className={`nav-item ${currentSection === "ordersAdmin" ? "active bg-secondary text-light" : ""}`} onClick={() => handleTabChange("ordersAdmin")}>
-                        Commandes
+                        Mes tickets
+                    </li>
+                    <li className={`nav-item ${currentSection === "gainsAdmin" ? "active bg-secondary text-light" : ""}`} onClick={() => handleTabChange("gainsAdmin")}>
+                        Les gains
+                    </li>
+                    <li className={`nav-item ${currentSection === "gameAdmin" ? "active bg-secondary text-light" : ""}`} onClick={() => handleTabChange("gameAdmin")}>
+                        Jeu
                     </li>
                     <li className={`nav-item ${currentSection === "lotsAdmin" ? "active bg-secondary text-light" : ""}`} onClick={() => handleTabChange("lotsAdmin")}>
-                        Lots
+                        Les lots
                     </li>
                 </ul>
             </nav>

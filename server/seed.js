@@ -22,23 +22,64 @@ async function createUsers() {
     });
 }
 
-async function createJeux() {
-    const jeux = [];
-    const participantsPerGame = Math.floor(NUM_USERS / 5); // 5 jeux
-    for (let i = 0; i < 5; i++) {
-        const jeu = [`jeu_${i + 1}`, faker.lorem.sentence(), participantsPerGame, faker.date.future(), faker.date.future()];
-        jeux.push(jeu);
-    }
+// async function createJeux() {
+//     const jeux = [];
+//     const participantsPerGame = Math.floor(NUM_USERS / 5); // 5 jeux
+//     for (let i = 0; i < 5; i++) {
+//         const jeu = [`jeu_${i + 1}`, faker.lorem.sentence(), participantsPerGame, faker.date.future(), faker.date.future()];
+//         jeux.push(jeu);
+//     }
+
+//     const query = "INSERT INTO jeu (title, description, nbre_participant, date_debut, date_fin) VALUES ?";
+//     db.query(query, [jeux], (err) => {
+//         if (err) {
+//             console.error("Error inserting games:", err);
+//             return;
+//         }
+//         console.log("Le jeu a été ajouté avec succès.");
+//     });
+// }
+
+async function createJeu() {
+    const participantsPerGame = NUM_USERS;
+    const jeu = [`jeu_1`, faker.lorem.sentence(), participantsPerGame, faker.date.future(), faker.date.future()];
 
     const query = "INSERT INTO jeu (title, description, nbre_participant, date_debut, date_fin) VALUES ?";
-    db.query(query, [jeux], (err) => {
+    db.query(query, [[jeu]], (err) => {
         if (err) {
-            console.error("Error inserting games:", err);
+            console.error("Error inserting game:", err);
             return;
         }
         console.log("Le jeu a été ajouté avec succès.");
     });
 }
+
+// async function createTickets() {
+//     db.query("SELECT id FROM user", (err, results) => {
+//         if (err) {
+//             console.error("Error fetching users:", err);
+//             return;
+//         }
+
+//         const users = results;
+//         const tickets = [];
+//         const numJeux = 5;
+//         for (let i = 0; i < NUM_TICKETS; i++) {
+//             const ticket = [`ticket_${i + 1}`, users[i % users.length].id, (i % numJeux) + 1];
+//             tickets.push(ticket);
+//         }
+
+//         const query = "INSERT INTO ticket (title, idUser, idJeu) VALUES ?";
+//         db.query(query, [tickets], (err) => {
+//             if (err) {
+//                 console.error("Error inserting tickets:", err);
+//                 return;
+//             }
+//             console.log("Les tickets ont été ajouté avec succès.");
+//             // createLots();
+//         });
+//     });
+// }
 
 async function createTickets() {
     db.query("SELECT id FROM user", (err, results) => {
@@ -49,9 +90,9 @@ async function createTickets() {
 
         const users = results;
         const tickets = [];
-        const numJeux = 5;
+        const jeuId = 1;
         for (let i = 0; i < NUM_TICKETS; i++) {
-            const ticket = [`ticket_${i + 1}`, users[i % users.length].id, (i % numJeux) + 1];
+            const ticket = [`ticket_${i + 1}`, users[i % users.length].id, jeuId];
             tickets.push(ticket);
         }
 
@@ -61,15 +102,14 @@ async function createTickets() {
                 console.error("Error inserting tickets:", err);
                 return;
             }
-            console.log("Les tickets ont été ajouté avec succès.");
-            // createLots();
+            console.log("Les tickets ont été ajoutés avec succès.");
         });
     });
 }
 
 async function seedDatabase() {
     await createUsers();
-    await createJeux();
+    await createJeu();
     await createTickets();
 }
 

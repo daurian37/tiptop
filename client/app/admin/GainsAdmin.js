@@ -2,17 +2,15 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import ResponsivePagination from "react-responsive-pagination";
 
-const LotsAdmin = () => {
+const GainsAdmin = () => {
     const [pageNumber] = useState(15);
     const [lots, setLots] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const [isEdit, setIsEdit] = useState(null);
-    const [editedLot, setEditedLot] = useState({ idLot: null, title: "" });
 
     useEffect(() => {
         axios
-            .get("http://localhost:8000/list/lots")
+            .get("http://localhost:8000/lots/users")
             .then((response) => {
                 const lotList = response.data;
                 setLots(lotList);
@@ -34,56 +32,40 @@ const LotsAdmin = () => {
         setCurrentPage(page);
     };
 
-    const handleEditLot = (lot) => {
-        setIsEdit(lot.idLot);
-        setEditedLot({ idLot: lot.idLot, title: lot.title });
-    };
-
-    const handleCancelLot = () => {
-        setIsEdit(null);
-    };
-
-    const handleChangeLot = (e) => {
-        setEditedLot({ ...editedLot, title: e.target.value });
-    };
-
-    const handleSaveLot = (idLot) => {
-        axios
-            .put(`http://localhost:8000/api/lot/${idLot}`, { title: editedLot.title })
-            .then((response) => {
-                const updatedLot = response.data;
-                const updatedLots = lots.map((lot) => (lot.idLot === updatedLot.idLot ? updatedLot : lot));
-                setLots(updatedLots);
-                setIsEdit(null);
-                window.location.reload();
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    };
-
     return (
         <div>
-            <h3 className="text-center">Liste des lots</h3>
+            <h3 className="text-center">Liste des gains</h3>
             <table className="rwd-table">
                 <tbody>
                     <tr>
+                        <th className="text-center">Nom</th>
+                        <th className="text-center">Prénom</th>
                         <th className="text-center">Titre</th>
+                        <th className="text-center">Ticket</th>
                     </tr>
                     {currentLots.map((lot) => (
-                        <tr key={lot.idLot}>
+                        <tr key={lot.id}>
                             <td className="text-center" data-th="titre">
-                                <input type="text" name="title" value={isEdit === lot.idLot ? editedLot.title : lot.title} onChange={handleChangeLot} className={`form-control border bgeditlot ${isEdit === lot.idLot ? "editlot" : ""}`} disabled={isEdit !== lot.idLot} />
+                                {lot.lastname}
+                            </td>
+                            <td className="text-center" data-th="titre">
+                                {lot.firstname}
+                            </td>
+                            <td className="text-center" data-th="titre">
+                                {lot.lotTitle}
+                            </td>
+                            <td className="text-center" data-th="ticket">
+                                {lot.ticketTitle}
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
             <div className="container justify-content-center">
-                <ResponsivePagination total={totalPages} current={currentPage} onPageChange={handlePageChange} />
+                <ResponsivePagination total={totalPages} current={currentPage} onPageChange={(page) => handlePageChange(page)} />
             </div>
         </div>
     );
 };
 
-export default LotsAdmin;
+export default GainsAdmin;
