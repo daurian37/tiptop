@@ -206,11 +206,52 @@ app.get("/tickets", verifyToken, (req, res) => {
     });
 });
 
+app.get("/list/ticket", (req, res) => {
+    const sqlTickets = `
+        SELECT t.idTicket, t.title AS ticketTitle, t.idUser, t.idJeu, j.title AS jeuTitle, j.description AS jeuDescription, j.nbre_participant, j.date_debut, j.date_fin 
+        FROM ticket t 
+        JOIN jeu j ON t.idJeu = j.idJeu
+    `;
+
+    db.query(sqlTickets, (err, tickets) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        res.json({ tickets });
+    });
+});
+
+// Afficher tous les tickets
+app.get("/list/tickets", (req, res) => {
+    const sql = "SELECT * FROM `ticket`";
+    db.query(sql, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        res.json(result);
+    });
+});
+
+app.get("/list/lots", (req, res) => {
+    const sql = "SELECT * FROM `lot`";
+    db.query(sql, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        res.json(result);
+    });
+});
+
 app.get("/lots/users", (req, res) => {
     const sql = `
-        SELECT l.idLot, l.title AS lotTitle, t.title AS ticketTitle
+        SELECT l.idLot, l.title AS lotTitle, t.title AS ticketTitle, t.idUser AS idUser,
+            u.firstname, u.lastname
         FROM lot l
         LEFT JOIN ticket t ON l.idTicket = t.idTicket
+        LEFT JOIN user u ON t.idUser = u.id
     `;
 
     db.query(sql, (err, result) => {
@@ -254,6 +295,17 @@ app.get("/lots", verifyToken, (req, res) => {
 
             res.json({ user: result[0], lots: lots });
         });
+    });
+});
+
+app.get("/jeu", (req, res) => {
+    const sql = "SELECT * FROM jeu";
+    db.query(sql, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        res.json(result);
     });
 });
 
@@ -433,6 +485,69 @@ app.post("/api/lot", (req, res) => {
     });
 });
 
+app.put("/api/lot/:idLot", (req, res) => {
+    const { idLot } = req.params;
+    const { title } = req.body;
+
+    if (!title) {
+        return res.status(400).json({ error: "Le champs titre est requis" });
+    }
+
+    // Vérifiez si le lot existe
+    const checkLotQuery = "SELECT idLot FROM lot WHERE idLot = ?";
+    db.query(checkLotQuery, [idLot], (err, results) => {
+        if (err) {
+            console.error("Erreur lors de la récupération du lot :", err);
+            return res.status(500).json({ error: "Erreur lors de la récupération du lot" });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Lot non trouvé" });
+        }
+
+        // Mise à jour du lot
+        const updateLotQuery = "UPDATE lot SET title = ? WHERE idLot = ?";
+        db.query(updateLotQuery, [title, idLot], (err, results) => {
+            if (err) {
+                console.error("Erreur lors de la mise à jour du lot :", err);
+                return res.status(500).json({ error: "Erreur lors de la mise à jour du lot" });
+            }
+
+            // Réponse de succès
+            res.status(200).json({ message: "Lot mis à jour avec succès" });
+        });
+    });
+});
+
+app.put("/api/jeu/:idJeu", (req, res) => {
+    const { idJeu } = req.params;
+    const { title } = req.body;
+
+    if (!title) {
+        return res.status(400).json({ message: "Titre requis" });
+    }
+
+    const sql = "SELECT idJeu FROM jeu WHERE idJeu = ?";
+
+    db.query(sql, [idJeu], (err, result) => {
+        if (err) {
+            console.error("Erreur lors de la récupération du jeu :", err);
+            return res.status(500).json({ error: "Erreur lors de la récupération du lot" });
+        }
+
+        if (result.length === 0) {
+            return res.status(404).json({ error: "Jeu non trouvé" });
+        }
+
+        const updatedJeuQuery = "UPDATE jeu SET title = ? WHERE idJeu = ?";
+        db.query(updatedJeuQuery, [title, idJeu], (err, result) => {
+            if (err) {
+                return res.status(500).json({ err });
+            }
+            return res.json({ status: "success" });
+        });
+    });
+});
 //route pour récupérer tous les lots
 app.get("/api/totalLots", (req, res) => {
     const query = "SELECT * FROM lot";
@@ -445,7 +560,6 @@ app.get("/api/totalLots", (req, res) => {
         res.json(results);
     });
 });
-
 
 app.get("/protected-route", verifyToken, (req, res) => {
     // Si le token est valide, vous pouvez utiliser req.email pour accéder à l'adresse e-mail de l'utilisateur

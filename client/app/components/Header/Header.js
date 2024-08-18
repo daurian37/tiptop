@@ -2,13 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import "../../../public/assets/css/style.css";
-import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 
 const Header = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
-    const router = useRouter();
+    const [isEmployee, setIsEmployee] = useState(false);
 
     useEffect(() => {
         // Vérifiez si un token est présent dans le localStorage
@@ -20,6 +19,8 @@ const Header = () => {
 
             if (user.category === 1) {
                 setIsAdmin(true);
+            } else if (user.category === 3) {
+                setIsEmployee(true);
             }
         }
     }, []);
@@ -27,7 +28,7 @@ const Header = () => {
     const handleLogout = () => {
         localStorage.removeItem("token");
         setIsLoggedIn(false);
-        router.push("/");
+        window.location.href = "/";
     };
     return (
         <div className="container-fluid p-0">
@@ -64,6 +65,12 @@ const Header = () => {
                             <li className="nav-item">
                                 <a className="nav-link" href="/admin">
                                     Admin
+                                </a>
+                            </li>
+                        ) : isEmployee ? (
+                            <li className="nav-item">
+                                <a className="nav-link" href="/employee">
+                                    Employee
                                 </a>
                             </li>
                         ) : (

@@ -184,3 +184,7 @@ th {
         padding: 0.5em !important;
     }
 }
+
+.pagination a.page-link {
+    background-color: #fff;
+}

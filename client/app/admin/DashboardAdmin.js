@@ -1,4 +1,6 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import ResponsivePagination from "react-responsive-pagination";
 
@@ -7,6 +9,24 @@ const DashboardAdmin = () => {
     const [users, setUsers] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
+    const router = useRouter();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            const user = jwtDecode(token);
+            if (user && user.category === 1) {
+                setIsLoggedIn(true);
+                setIsAdmin(true);
+            } else {
+                router.push("/profile");
+            }
+        } else {
+            router.push("/login");
+        }
+    }, [router]);
 
     useEffect(() => {
         axios
@@ -41,19 +61,12 @@ const DashboardAdmin = () => {
                         <th>Nom</th>
                         <th>Prénom</th>
                         <th>Email</th>
-                        <th>Action</th>
                     </tr>
                     {currentUsers.map((user) => (
                         <tr key={user.id}>
                             <td data-th="nom">{user.lastname}</td>
                             <td data-th="prenom">{user.firstname}</td>
                             <td data-th="Email">{user.email}</td>
-                            <td className="text-center" data-th="Action">
-                                <div className="d-flex justify-content-around" style={{ cursor: "pointer" }}>
-                                    <i class="fa fa-trash text-danger" aria-hidden="true" onClick={() => alert("bientot")}></i>
-                                    <i class="fa fa-pencil-square-o" aria-hidden="true" onClick={() => alert("bientot")}></i>
-                                </div>
-                            </td>
                         </tr>
                     ))}
                 </tbody>
