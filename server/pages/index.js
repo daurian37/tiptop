@@ -3,7 +3,7 @@ const cors = require("cors");
 const env = require("dotenv");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const db = require("./db");
+const db = require("../db");
 
 // A decomenter avant de lancer la création de l'image docker
 // const mysql = require("mysql");
