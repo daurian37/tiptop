@@ -8,7 +8,7 @@ const OrdersAdmin = () => {
 
     useEffect(() => {
         axios
-            .get("https://tiptop-snowy.vercel.app/tickets/users")
+            .get("https://tiptop-server.vercel.app/tickets/users")
             .then((response) => {
                 setTickets(response.data.tickets);
             })
