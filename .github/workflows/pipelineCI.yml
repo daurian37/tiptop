@@ -1,6 +1,5 @@
 name: CI Pipeline
 
-# Définition des déclencheurs
 on:
   push:
     branches:
@@ -12,27 +11,30 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    
-    # Stratégie pour tester différentes versions de Node.js (facultatif)
+
     strategy:
       matrix:
         node-version: [16.x, 18.x]
 
     steps:
-    # Vérification du dépôt
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # Configuration de la version de Node.js
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
 
-    # Installation des dépendances
+    # Se déplacer dans le répertoire 'client'
+    - name: Change directory to /client
+      working-directory: ./client
+
+    # Installation des dépendances dans le répertoire 'client'
     - name: Install dependencies
       run: npm install
+      working-directory: ./client
 
-    # Exécution des tests
+    # Exécution des tests dans le répertoire 'client'
     - name: Run tests
-      run: npm run test
+      run: npm test
+      working-directory: ./client
