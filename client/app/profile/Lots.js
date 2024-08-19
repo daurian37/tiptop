@@ -11,7 +11,7 @@ const Lots = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         axios
-            .get("https://tiptop-server.vercel.app/lots", {
+            .get("http://localhost:8000/lots", {
                 headers: {
                     Authorization: token,
                 },

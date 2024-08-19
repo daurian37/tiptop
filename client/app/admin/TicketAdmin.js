@@ -12,7 +12,7 @@ const TicketsAdmin = () => {
 
     useEffect(() => {
         axios
-            .get("https://tiptop-server.vercel.app/list/ticket")
+            .get("http://localhost:8000/list/ticket")
             .then((response) => {
                 const ticketList = response.data.tickets;
                 setTickets(ticketList);
@@ -49,7 +49,7 @@ const TicketsAdmin = () => {
 
     const handleSaveTicket = (idTicket) => {
         axios
-            .put(`https://tiptop-server.vercel.app/api/lot/${idTicket}`, { title: editedTicket.title })
+            .put(`http://localhost:8000/api/lot/${idTicket}`, { title: editedTicket.title })
             .then((response) => {
                 const updatedTicket = response.data;
                 const updatedTickets = tickets.map((ticket) => (ticket.idTicket === updatedTicket.idTicket ? updatedTicket : ticket));

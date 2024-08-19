@@ -31,7 +31,7 @@ const DashboardEmployee = () => {
 
     useEffect(() => {
         axios
-            .get("https://tiptop-server.vercel.app/lots/users")
+            .get("http://localhost:8000/lots/users")
             .then((response) => {
                 const lotList = response.data;
                 setLots(lotList);

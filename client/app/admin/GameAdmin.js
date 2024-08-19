@@ -12,7 +12,7 @@ const GameAdmin = () => {
 
     useEffect(() => {
         axios
-            .get("https://tiptop-server.vercel.app/jeu")
+            .get("http://localhost:8000/jeu")
             .then((response) => {
                 const jeuList = response.data;
                 setJeu(jeuList);
@@ -49,7 +49,7 @@ const GameAdmin = () => {
 
     const handleSaveJeu = (idJeu) => {
         axios
-            .put(`https://tiptop-server.vercel.app/api/jeu/${idJeu}`, { title: editedJeu.title })
+            .put(`http://localhost:8000/api/jeu/${idJeu}`, { title: editedJeu.title })
             .then((response) => {
                 const updatedJeu = response.data;
                 const updatedJeux = jeux.map((jeu) => (jeu.idJeu === updatedJeu.idJeu ? updatedJeu : jeu));

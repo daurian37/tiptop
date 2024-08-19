@@ -10,7 +10,7 @@ const Orders = () => {
         const token = localStorage.getItem("token");
 
         axios
-            .get("https://tiptop-server.vercel.app/tickets", {
+            .get("http://localhost:8000/tickets", {
                 headers: {
                     Authorization: token,
                 },

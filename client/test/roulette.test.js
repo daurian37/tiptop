@@ -12,7 +12,7 @@ describe("Roulette Component", () => {
         render(<Roulette />);
 
         // Mock de fetch pour simuler l'appel API de validation de ticket
-        fetchMock.get("https://tiptop-server.vercel.app/api/ticket/ticket_1", {
+        fetchMock.get("http://localhost:8000/api/ticket/ticket_1", {
             valid: false,
         });
 
@@ -35,7 +35,7 @@ describe("Roulette Component", () => {
         render(<Roulette />);
 
         // Mock de fetch pour simuler l'appel POST
-        fetchMock.post("https://tiptop-server.vercel.app/api/lot", {
+        fetchMock.post("http://localhost:8000/api/lot", {
             status: 201,
             body: { message: "Lot enregistré avec succès", lotId: 1 },
         });
