@@ -12,7 +12,7 @@ const LotsAdmin = () => {
 
     useEffect(() => {
         axios
-            .get("http://localhost:8000/list/lots")
+            .get("https://tiptop-server.vercel.app/list/lots")
             .then((response) => {
                 const lotList = response.data;
                 setLots(lotList);
@@ -49,7 +49,7 @@ const LotsAdmin = () => {
 
     const handleSaveLot = (idLot) => {
         axios
-            .put(`http://localhost:8000/api/lot/${idLot}`, { title: editedLot.title })
+            .put(`https://tiptop-server.vercel.app/api/lot/${idLot}`, { title: editedLot.title })
             .then((response) => {
                 const updatedLot = response.data;
                 const updatedLots = lots.map((lot) => (lot.idLot === updatedLot.idLot ? updatedLot : lot));

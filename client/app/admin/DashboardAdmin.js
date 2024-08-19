@@ -30,7 +30,7 @@ const DashboardAdmin = () => {
 
     useEffect(() => {
         axios
-            .get("http://localhost:8000/users")
+            .get("https://tiptop-server.vercel.app/users")
             .then((response) => {
                 const userList = response.data;
                 setUsers(userList);
