@@ -16,7 +16,7 @@ jobs:
     # Stratégie pour tester différentes versions de Node.js (facultatif)
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [16.x, 18.x]
 
     steps:
     # Vérification du dépôt
