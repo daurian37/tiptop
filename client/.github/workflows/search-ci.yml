@@ -3,10 +3,10 @@ name: Node.js CI
 on:
   push:
     branches:
-      - SP-3/GithubAction-CI-CD  
+      - SP-3/GithubAction-CI-CD 
   pull_request:
-    branches: 
-      - SP-3/GithubAction-CI-CD  
+    branches:
+      - SP-3/GithubAction-CI-CD 
 
 jobs:
   build:
@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x] 
+        node-version: [18.x]
 
     steps:
       - name: Checkout repository
