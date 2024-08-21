@@ -28,7 +28,13 @@ jobs:
       run: npm install
       working-directory: ./client
 
-    # Exécution des tests dans le répertoire 'client'
-    - name: Run tests
+    # Exécution des tests unitaires dans le répertoire 'client'
+    - name: Run tests unitaires
       run: npm test
       working-directory: ./client
+
+
+    # Exécution des tests unitaires dans le répertoire 'client'
+    - name: Run tests e2e
+      run:  npx playwright test
+      working-directory: ./client/test-e2e
