@@ -4,6 +4,8 @@ const env = require("dotenv");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const db = require("./db");
+const nodemailer = require("nodemailer");
+const smtpTransport = require("nodemailer-smtp-transport");
 
 // A decomenter avant de lancer la création de l'image docker
 // const mysql = require("mysql");
@@ -564,6 +566,44 @@ app.get("/api/totalLots", (req, res) => {
 app.get("/protected-route", verifyToken, (req, res) => {
     // Si le token est valide, vous pouvez utiliser req.email pour accéder à l'adresse e-mail de l'utilisateur
     res.json({ message: "Access granted", email: req.email });
+});
+
+app.post("/api/contact", async (req, res) => {
+    try {
+        const { email, message, subject, fullname } = req.body;
+
+        const transporter = nodemailer.createTransport(
+            smtpTransport({
+                service: "gmail",
+                host: process.env.SMTP_HOST,
+                port: process.env.SMTP_PORT,
+                auth: {
+                    user: "gwordpress387@gmail.com",
+                    pass: "nepsgrqvybcvjjah",
+                },
+            })
+        );
+
+        const mailOptions = {
+            from: email,
+            to: "gwordpress387@gmail.com",
+            subject: subject,
+            text: `De: ${fullname}\nEmail: ${email}\nMessage: ${message}`,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log("Erreur lors de l'envoi de l'email :", error);
+            } else {
+                console.log("Email envoyé :", info.response);
+            }
+        });
+
+        res.json({ message: "Votre message a été envoyé avec succès." });
+    } catch (error) {
+        console.error("Une erreur s'est produite :", error);
+        res.status(500).send("Une erreur s'est produite lors de l'envoi de l'e-mail.");
+    }
 });
 
 app.post("/logout", (req, res) => {
