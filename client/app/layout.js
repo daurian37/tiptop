@@ -7,6 +7,7 @@ import Footer from "./components/Footer/Footer";
 import Header from "./components/Header/Header";
 import "./globals.css";
 import { metadata } from "./metadata";
+import Script from "next/script";
 
 export default function RootLayout({ children }) {
     const pathname = usePathname();
@@ -33,6 +34,17 @@ export default function RootLayout({ children }) {
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossOrigin="anonymous"></script>
+
+                <Script async src="https://www.googletagmanager.com/gtag/js?id=G-2QP99VQNRS"></Script>
+                <Script id="google-analytics">
+                    {`
+                        window.dataLayer = window.dataLayer || [];
+                        function gtag(){dataLayer.push(arguments);}
+                        gtag('js', new Date());
+
+                        gtag('config', 'G-2QP99VQNRS');
+                    `}
+                </Script>
             </head>
 
             <body>
