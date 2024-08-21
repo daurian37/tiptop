@@ -59,7 +59,7 @@ const Roulette = () => {
     };
 
     const handleSpinClick = () => {
-        if (totalLots == 20) {
+        if (totalLots == 50) {
             setErrorMessage("Tous les lots ont été attribués. Merci de revenir plus tard.");
             return;
         }
