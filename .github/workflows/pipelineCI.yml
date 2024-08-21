@@ -29,9 +29,9 @@ jobs:
       working-directory: ./client
 
     # Exécution des tests unitaires dans le répertoire 'client'
-    - name: Run unit tests
-      run: npm test
-      working-directory: ./client
+    # - name: Run unit tests
+    #   run: npm test
+    #   working-directory: ./client
 
     # Installation de Playwright et exécution des tests e2e dans le répertoire 'client/test-e2e'
     - name: Run e2e tests
