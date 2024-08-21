@@ -23,7 +23,7 @@ const Contact = () => {
             return;
         }
         axios
-            .post("http://localhost:8000/api/contact", mailer)
+            .post("https://tiptop-server.vercel.app/api/contact", mailer)
             .then((response) => {
                 setMessage(response.data.message);
                 setError("");
