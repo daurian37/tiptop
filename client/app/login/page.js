@@ -53,9 +53,11 @@ const login = () => {
                 }
             })
             .catch((err) => {
-                setErrors({}); // Réinitialiser les erreurs précédentes
-                setErrorMessage(err.response.data);
+                setErrors({}); 
+                const errorMessage = err.response?.data || "Une erreur s'est produite. Veuillez réessayer.";
+                setErrorMessage(errorMessage);
             });
+
     };
 
     const handleChange = (e) => {

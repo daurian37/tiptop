@@ -1,0 +1,34 @@
+name: CI Pipeline
+
+on:
+  push: {}
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    # Installation des dépendances dans le répertoire 'client'
+    - name: Install dependencies
+      run: npm install
+      working-directory: ./client
+
+    # Exécution des tests dans le répertoire 'client'
+    - name: Run tests
+      run: npm test
+      working-directory: ./client
