@@ -3,6 +3,7 @@ const { test, expect } = require("@playwright/test");
 
 test("participation jeu concours", async ({ page }) => {
   await page.goto("https://tiptop-snowy.vercel.app/");
+  // await page.goto("https://www.dsp5-archi-o22b-4-5-g1.com/");
   await page.waitForTimeout(1000);
   await page.getByRole('button', { name: 'J\'accepte' }).click();
   await page.getByRole("button", { name: "Participer" }).click();
@@ -22,8 +23,8 @@ test("participation jeu concours", async ({ page }) => {
   await page.getByPlaceholder("Code ticket").click();
   await page.getByPlaceholder("Code ticket").fill("ticket_3");
   await page.getByPlaceholder('Code ticket').press('Enter');
-  // await page.getByRole("button", { name: "Jouer" }).click();
-  // await page.getByPlaceholder('Code ticket').press('Enter');
+  await page.getByRole("button", { name: "Jouer" }).click();
+  await page.getByPlaceholder('Code ticket').press('Enter');
 
   await page.waitForTimeout(1000);
 });
