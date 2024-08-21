@@ -581,8 +581,8 @@ app.post("/api/contact", async (req, res) => {
         const transporter = nodemailer.createTransport(
             smtpTransport({
                 service: "gmail",
-                host: "smtp.gmail.com",
-                port: 587,
+                host: process.env.SMTP_HOST,
+                port: process.env.SMTP_PORT,
                 auth: {
                     user: "gwordpress387@gmail.com",
                     pass: "nepsgrqvybcvjjah",
