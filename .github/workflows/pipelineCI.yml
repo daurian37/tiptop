@@ -36,5 +36,6 @@ jobs:
 
     # Exécution des tests unitaires dans le répertoire 'client'
     - name: Run tests e2e
+      run: npx playwright install
       run:  npx playwright test
       working-directory: ./client/test-e2e
