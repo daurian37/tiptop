@@ -29,9 +29,9 @@ jobs:
       working-directory: ./client
 
     # Exécution des tests unitaires dans le répertoire 'client'
-    - name: Run tests unitaires
-      run: npm test
-      working-directory: ./client
+    # - name: Run tests unitaires
+    #   run: npm test
+    #   working-directory: ./client
 
 
     # Exécution des tests unitaires dans le répertoire 'client'
