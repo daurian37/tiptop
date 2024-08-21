@@ -572,6 +572,12 @@ app.post("/api/contact", async (req, res) => {
     try {
         const { email, message, subject, fullname } = req.body;
 
+        if (!email || !message || !subject || !fullname) {
+            return res.status(400).json({
+                error: "Tous les champs sont obligatoires : email, message, sujet, nom complet.",
+            });
+        }
+
         const transporter = nodemailer.createTransport(
             smtpTransport({
                 service: "gmail",
