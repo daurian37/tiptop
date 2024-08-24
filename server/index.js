@@ -46,7 +46,7 @@ app.use((req, res, next) => {
       queryParams: req.query,
     };
     fs.appendFileSync(
-      path.join(__dirname, "app.log"),
+      path.join("/tmp", "app.log"),
       JSON.stringify(log) + "\n"
     );
   });
