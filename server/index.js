@@ -28,9 +28,14 @@ const port = 8000 || process.env.PORT;
 //   port: 3306,
 // });
 
+// Détermine le chemin où les logs seront écrits
+const logDirectory = fs.existsSync("/tmp") ? "/tmp" : __dirname;
+const logFilePath = path.join(logDirectory, "app.log");
+
 // Middleware pour enregistrer les logs des requêtes
 app.use((req, res, next) => {
   const start = Date.now();
+
   res.on("finish", () => {
     const duration = Date.now() - start;
     const log = {
@@ -41,14 +46,18 @@ app.use((req, res, next) => {
       timestamp: new Date().toISOString(),
       clientIp: req.ip || req.connection.remoteAddress,
       userAgent: req.headers["user-agent"],
-      requestedFrom: req.headers['x-requested-from'] || 'Unknown',
+      requestedFrom: req.headers["x-requested-from"] || "Unknown",
       requestBody: req.body,
       queryParams: req.query,
     };
-    fs.appendFileSync(
-      path.join("/tmp", "app.log"),
-      JSON.stringify(log) + "\n"
-    );
+
+    try {
+      // Enregistre le log dans le bon fichier
+      fs.appendFileSync(logFilePath, JSON.stringify(log) + "\n");
+      console.log("Log écrit dans:", logFilePath); // Affiche le chemin utilisé
+    } catch (err) {
+      console.error("Erreur lors de l'écriture des logs : ", err);
+    }
   });
 
   next();
@@ -119,12 +128,10 @@ app.put("/profile", verifyToken, (req, res) => {
   if (newPassword) {
     const validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
     if (!newPassword.match(validPassword)) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Le mot de passe doit contenir entre 8 et 20 caractères, inclure au moins une lettre majuscule, une lettre minuscule et un chiffre.",
-        });
+      return res.status(400).json({
+        message:
+          "Le mot de passe doit contenir entre 8 et 20 caractères, inclure au moins une lettre majuscule, une lettre minuscule et un chiffre.",
+      });
     }
   }
 
@@ -486,11 +493,9 @@ app.get("/api/checkTicketInLot/:ticketNumber", verifyToken, (req, res) => {
                 "Erreur lors de la vérification du ticket utilisateur :",
                 err
               );
-              return res
-                .status(500)
-                .json({
-                  error: "Erreur lors de la vérification du ticket utilisateur",
-                });
+              return res.status(500).json({
+                error: "Erreur lors de la vérification du ticket utilisateur",
+              });
             }
 
             if (userTicketResults.length === 0) {
