@@ -28,7 +28,7 @@ const port = 8000 || process.env.PORT;
 //   port: 3306,
 // });
 
-// Détermine le chemin où les logs seront écrits
+// Détermine le chemin de sauvregade des logs 
 const logDirectory = fs.existsSync("/tmp") ? "/tmp" : __dirname;
 const logFilePath = path.join(logDirectory, "app.log");
 
