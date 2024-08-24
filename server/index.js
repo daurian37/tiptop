@@ -29,143 +29,149 @@ const port = 8000 || process.env.PORT;
 // });
 
 // Détermine le chemin où les logs seront écrits
-const logDirectory = fs.existsSync("/tmp") ? "/tmp" : __dirname;
+const logDirectory = fs.existsSync("./tmp") ? "./tmp" : __dirname;
 const logFilePath = path.join(logDirectory, "app.log");
 
 // Middleware pour enregistrer les logs des requêtes
 app.use((req, res, next) => {
-  const start = Date.now();
+    const start = Date.now();
 
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    const log = {
-      method: req.method,
-      url: req.url,
-      status: res.statusCode,
-      duration: `${duration}ms`,
-      timestamp: new Date().toISOString(),
-      clientIp: req.ip || req.connection.remoteAddress,
-      userAgent: req.headers["user-agent"],
-      requestedFrom: req.headers["x-requested-from"] || "Unknown",
-      requestBody: req.body,
-      queryParams: req.query,
-    };
+    res.on("finish", () => {
+        const duration = Date.now() - start;
+        const log = {
+            method: req.method,
+            url: req.url,
+            status: res.statusCode,
+            duration: `${duration}ms`,
+            timestamp: new Date().toISOString(),
+            clientIp: req.ip || req.connection.remoteAddress,
+            userAgent: req.headers["user-agent"],
+            requestedFrom: req.headers["x-requested-from"] || "Unknown",
+            requestBody: req.body,
+            queryParams: req.query,
+        };
 
-    try {
-      // Enregistre le log dans le bon fichier
-      fs.appendFileSync(logFilePath, JSON.stringify(log) + "\n");
-      console.log("Log écrit dans:", logFilePath); // Affiche le chemin utilisé
-    } catch (err) {
-      console.error("Erreur lors de l'écriture des logs : ", err);
-    }
-  });
+        try {
+            // Enregistre le log dans le bon fichier
+            fs.appendFileSync(logFilePath, JSON.stringify(log) + "\n");
+            console.log("Log écrit dans:", logFilePath); // Affiche le chemin utilisé
+        } catch (err) {
+            console.error("Erreur lors de l'écriture des logs : ", err);
+        }
+    });
 
-  next();
+    next();
+});
+
+// Route pour lire et servir le fichier de logs
+app.get("/logs", (req, res) => {
+    fs.readFile(logFilePath, "utf8", (err, data) => {
+        if (err) {
+            return res.status(500).send("Erreur lors de la lecture du fichier de logs");
+        }
+        res.setHeader("Content-Type", "text/plain");
+        res.send(data);
+    });
 });
 
 app.get("/", (req, res) => {
-  res.send("Welcome ");
+    res.send("Welcome ");
 });
 
 // Middleware pour vérifier le token JWT
 const verifyToken = (req, res, next) => {
-  const token = req.headers["authorization"];
+    const token = req.headers["authorization"];
 
-  if (!token) {
-    return res.status(403).json({ message: "No token provided" });
-  }
-
-  // Vérifier le token
-  jwt.verify(token, "secret_key", (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ message: "Failed to authenticate token" });
+    if (!token) {
+        return res.status(403).json({ message: "No token provided" });
     }
-    req.email = decoded.email;
-    next();
-  });
+
+    // Vérifier le token
+    jwt.verify(token, "secret_key", (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ message: "Failed to authenticate token" });
+        }
+        req.email = decoded.email;
+        next();
+    });
 };
 
 app.get("/users", (req, res) => {
-  const sql = "SELECT * FROM user";
+    const sql = "SELECT * FROM user";
 
-  db.query(sql, (err, result) => {
-    if (err) {
-      return res.status(500).json(err);
-    }
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Utilisateur non trouvé" });
-    }
-    res.json(result);
-  });
+    db.query(sql, (err, result) => {
+        if (err) {
+            return res.status(500).json(err);
+        }
+        if (result.length === 0) {
+            return res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
+        res.json(result);
+    });
 });
 
 app.get("/profile", verifyToken, (req, res) => {
-  const sql = "SELECT * FROM user WHERE email = ?";
-  const email = req.email;
+    const sql = "SELECT * FROM user WHERE email = ?";
+    const email = req.email;
 
-  db.query(sql, [email], (err, result) => {
-    if (err) {
-      return res.status(500).json(err);
-    }
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Utilisateur non trouvé" });
-    }
-    res.json(result[0]);
-  });
+    db.query(sql, [email], (err, result) => {
+        if (err) {
+            return res.status(500).json(err);
+        }
+        if (result.length === 0) {
+            return res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
+        res.json(result[0]);
+    });
 });
 
 app.put("/profile", verifyToken, (req, res) => {
-  const { firstname, lastname, email, newPassword } = req.body;
-  const currentEmail = req.email;
+    const { firstname, lastname, email, newPassword } = req.body;
+    const currentEmail = req.email;
 
-  if (!firstname || !lastname || !email) {
-    return res
-      .status(400)
-      .json({ message: "Les champs prénom, nom et email sont obligatoires" });
-  }
-
-  // Vérifier si un nouveau mot de passe est fourni et valider
-  if (newPassword) {
-    const validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
-    if (!newPassword.match(validPassword)) {
-      return res.status(400).json({
-        message:
-          "Le mot de passe doit contenir entre 8 et 20 caractères, inclure au moins une lettre majuscule, une lettre minuscule et un chiffre.",
-      });
+    if (!firstname || !lastname || !email) {
+        return res.status(400).json({ message: "Les champs prénom, nom et email sont obligatoires" });
     }
-  }
 
-  let sql =
-    "UPDATE user SET firstname = ?, lastname = ?, email = ? WHERE email = ?";
-  let values = [firstname, lastname, email, currentEmail];
-
-  if (newPassword) {
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(newPassword, salt);
-
-    sql =
-      "UPDATE user SET firstname = ?, lastname = ?, email = ?, password = ? WHERE email = ?";
-    values = [firstname, lastname, email, hash, currentEmail];
-  }
-
-  db.query(sql, values, (err, result) => {
-    if (err) {
-      return res.status(500).json(err);
+    // Vérifier si un nouveau mot de passe est fourni et valider
+    if (newPassword) {
+        const validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
+        if (!newPassword.match(validPassword)) {
+            return res.status(400).json({
+                message: "Le mot de passe doit contenir entre 8 et 20 caractères, inclure au moins une lettre majuscule, une lettre minuscule et un chiffre.",
+            });
+        }
     }
-    res.json({ message: "Informations mises à jour avec succès" });
-  });
+
+    let sql = "UPDATE user SET firstname = ?, lastname = ?, email = ? WHERE email = ?";
+    let values = [firstname, lastname, email, currentEmail];
+
+    if (newPassword) {
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(newPassword, salt);
+
+        sql = "UPDATE user SET firstname = ?, lastname = ?, email = ?, password = ? WHERE email = ?";
+        values = [firstname, lastname, email, hash, currentEmail];
+    }
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            return res.status(500).json(err);
+        }
+        res.json({ message: "Informations mises à jour avec succès" });
+    });
 });
 
 app.get("/tickets/users", (req, res) => {
-  const sqlUser = "SELECT * FROM user";
-  db.query(sqlUser, (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
+    const sqlUser = "SELECT * FROM user";
+    db.query(sqlUser, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
 
-    const userId = result[0].id;
+        const userId = result[0].id;
 
-    const sqlTickets = `
+        const sqlTickets = `
                 SELECT 
                     t.idTicket,
                     t.title AS ticketTitle,
@@ -189,39 +195,39 @@ app.get("/tickets/users", (req, res) => {
                     t.idUser = ?;
             `;
 
-    db.query(sqlTickets, [userId], (err, tickets) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
+        db.query(sqlTickets, [userId], (err, tickets) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
 
-      res.json({
-        user: result[0],
-        tickets: tickets,
-      });
+            res.json({
+                user: result[0],
+                tickets: tickets,
+            });
+        });
     });
-  });
 });
 
 app.get("/tickets", verifyToken, (req, res) => {
-  const email = req.email;
-  if (!email) {
-    return res.status(400).json({ message: "Email requis" });
-  }
-
-  // Requête pour obtenir l'utilisateur par son email
-  const sqlUser = "SELECT * FROM user WHERE email = ?";
-  db.query(sqlUser, [email], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+    const email = req.email;
+    if (!email) {
+        return res.status(400).json({ message: "Email requis" });
     }
 
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Utilisateur non trouvé" });
-    }
+    // Requête pour obtenir l'utilisateur par son email
+    const sqlUser = "SELECT * FROM user WHERE email = ?";
+    db.query(sqlUser, [email], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
 
-    const userId = result[0].id;
+        if (result.length === 0) {
+            return res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
 
-    const sqlTickets = `
+        const userId = result[0].id;
+
+        const sqlTickets = `
                 SELECT 
                     t.idTicket,
                     t.title AS ticketTitle,
@@ -239,60 +245,60 @@ app.get("/tickets", verifyToken, (req, res) => {
                     t.idUser = ?;
             `;
 
-    db.query(sqlTickets, [userId], (err, tickets) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
+        db.query(sqlTickets, [userId], (err, tickets) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
 
-      res.json({
-        user: result[0],
-        tickets: tickets,
-      });
+            res.json({
+                user: result[0],
+                tickets: tickets,
+            });
+        });
     });
-  });
 });
 
 app.get("/list/ticket", (req, res) => {
-  const sqlTickets = `
+    const sqlTickets = `
         SELECT t.idTicket, t.title AS ticketTitle, t.idUser, t.idJeu, j.title AS jeuTitle, j.description AS jeuDescription, j.nbre_participant, j.date_debut, j.date_fin 
         FROM ticket t 
         JOIN jeu j ON t.idJeu = j.idJeu
     `;
 
-  db.query(sqlTickets, (err, tickets) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
+    db.query(sqlTickets, (err, tickets) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
 
-    res.json({ tickets });
-  });
+        res.json({ tickets });
+    });
 });
 
 // Afficher tous les tickets
 app.get("/list/tickets", (req, res) => {
-  const sql = "SELECT * FROM `ticket`";
-  db.query(sql, (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
+    const sql = "SELECT * FROM `ticket`";
+    db.query(sql, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
 
-    res.json(result);
-  });
+        res.json(result);
+    });
 });
 
 app.get("/list/lots", (req, res) => {
-  const sql = "SELECT * FROM `lot`";
-  db.query(sql, (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
+    const sql = "SELECT * FROM `lot`";
+    db.query(sql, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
 
-    res.json(result);
-  });
+        res.json(result);
+    });
 });
 
 app.get("/lots/users", (req, res) => {
-  const sql = `
+    const sql = `
         SELECT l.idLot, l.title AS lotTitle, t.title AS ticketTitle, t.idUser AS idUser,
             u.firstname, u.lastname
         FROM lot l
@@ -300,423 +306,369 @@ app.get("/lots/users", (req, res) => {
         LEFT JOIN user u ON t.idUser = u.id
     `;
 
-  db.query(sql, (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
+    db.query(sql, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
 
-    res.json(result);
-  });
+        res.json(result);
+    });
 });
 
 app.get("/lots", verifyToken, (req, res) => {
-  const email = req.email;
-  if (!email) {
-    return res.status(400).json({ message: "Email requis" });
-  }
-
-  const sqlUser = "SELECT * FROM user WHERE email = ?";
-  db.query(sqlUser, [email], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+    const email = req.email;
+    if (!email) {
+        return res.status(400).json({ message: "Email requis" });
     }
 
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Utilisateur non trouvé" });
-    }
+    const sqlUser = "SELECT * FROM user WHERE email = ?";
+    db.query(sqlUser, [email], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
 
-    const userId = result[0].id;
+        if (result.length === 0) {
+            return res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
 
-    const sql = `
+        const userId = result[0].id;
+
+        const sql = `
             SELECT l.idLot, l.title AS lotTitle, t.title AS ticketTitle
             FROM lot l
             LEFT JOIN ticket t ON l.idTicket = t.idTicket
             WHERE t.idUser = ?
         `;
 
-    db.query(sql, [userId], (err, lots) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
+        db.query(sql, [userId], (err, lots) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
 
-      res.json({ user: result[0], lots: lots });
+            res.json({ user: result[0], lots: lots });
+        });
     });
-  });
 });
 
 app.get("/jeu", (req, res) => {
-  const sql = "SELECT * FROM jeu";
-  db.query(sql, (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
+    const sql = "SELECT * FROM jeu";
+    db.query(sql, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
 
-    res.json(result);
-  });
+        res.json(result);
+    });
 });
 
 app.post("/login", (req, res) => {
-  const sql = "SELECT * FROM user WHERE email =?";
-  const values = [req.body.email];
+    const sql = "SELECT * FROM user WHERE email =?";
+    const values = [req.body.email];
 
-  db.query(sql, values, (err, result) => {
-    if (err) {
-      return res.json(err);
-    }
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            return res.json(err);
+        }
 
-    if (!result.length) {
-      return res
-        .status(401)
-        .json("Aucun utilisateur ne correspond à ce compte.");
-    }
+        if (!result.length) {
+            return res.status(401).json("Aucun utilisateur ne correspond à ce compte.");
+        }
 
-    const user = result[0];
-    const passwordIsValid = bcrypt.compareSync(
-      req.body.password,
-      user.password
-    );
+        const user = result[0];
+        const passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
 
-    if (!passwordIsValid) {
-      return res.status(401).json("Email ou mot de passe incorrect");
-    }
+        if (!passwordIsValid) {
+            return res.status(401).json("Email ou mot de passe incorrect");
+        }
 
-    const token = jwt.sign(
-      { email: req.body.email, category: user.idCategorie_user },
-      "secret_key"
-    );
+        const token = jwt.sign({ email: req.body.email, category: user.idCategorie_user }, "secret_key");
 
-    // Envoyer le token en réponse
-    return res.json({ message: "Connexion réussie", token: token });
-  });
+        // Envoyer le token en réponse
+        return res.json({ message: "Connexion réussie", token: token });
+    });
 });
 
 app.post("/register", (req, res) => {
-  const ifUserALreadyExist = "SELECT * FROM user WHERE email = ?";
-  const values = [req.body.email];
+    const ifUserALreadyExist = "SELECT * FROM user WHERE email = ?";
+    const values = [req.body.email];
 
-  db.query(ifUserALreadyExist, values, (err, result) => {
-    if (err) {
-      return res.json(err);
-    }
+    db.query(ifUserALreadyExist, values, (err, result) => {
+        if (err) {
+            return res.json(err);
+        }
 
-    if (result.length) {
-      return res.status(409).json("Un utilisateur avec cet email existe déjà");
-    }
+        if (result.length) {
+            return res.status(409).json("Un utilisateur avec cet email existe déjà");
+        }
 
-    const validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
-    if (!req.body.password.match(validPassword)) {
-      return res
-        .status(400)
-        .json(
-          "Mot de passe incorrect. Il doit contenir entre 8 et 20 caractères, inclure au moins une lettre majuscule, une lettre minuscule et un chiffre."
-        );
-    }
+        const validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
+        if (!req.body.password.match(validPassword)) {
+            return res.status(400).json("Mot de passe incorrect. Il doit contenir entre 8 et 20 caractères, inclure au moins une lettre majuscule, une lettre minuscule et un chiffre.");
+        }
 
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(req.body.password, salt);
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(req.body.password, salt);
 
-    const sqlInsert =
-      "INSERT INTO user (email, firstname, lastname, password, idCategorie_user) VALUES (?, ?, ?, ?, ?)";
-    const valuesInsert = [
-      req.body.email,
-      req.body.firstname,
-      req.body.lastname,
-      hash,
-      2,
-    ];
+        const sqlInsert = "INSERT INTO user (email, firstname, lastname, password, idCategorie_user) VALUES (?, ?, ?, ?, ?)";
+        const valuesInsert = [req.body.email, req.body.firstname, req.body.lastname, hash, 2];
 
-    db.query(sqlInsert, valuesInsert, (err, result) => {
-      if (err) {
-        res
-          .status(500)
-          .send("Erreur lors de l'enregistrement de l'utilisateur");
-        return;
-      }
-      res.status(201).send("Utilisateur enregistré");
+        db.query(sqlInsert, valuesInsert, (err, result) => {
+            if (err) {
+                res.status(500).send("Erreur lors de l'enregistrement de l'utilisateur");
+                return;
+            }
+            res.status(201).send("Utilisateur enregistré");
+        });
     });
-  });
 });
 
 // Vérification si le ticket existe déjà dans la table lot
 app.get("/api/checkTicketInLot/:ticketNumber", verifyToken, (req, res) => {
-  const ticketNumber = req.params.ticketNumber;
-  const email = req.email;
+    const ticketNumber = req.params.ticketNumber;
+    const email = req.email;
 
-  if (!email) {
-    return res.status(400).json({ message: "Email requis" });
-  }
-
-  // Requête pour obtenir l'utilisateur par son email
-  const sqlUser = "SELECT id FROM user WHERE email = ?";
-
-  db.query(sqlUser, [email], (err, result) => {
-    if (err) {
-      console.error("Erreur lors de la récupération de l'utilisateur :", err);
-      return res
-        .status(500)
-        .json({ error: "Erreur lors de la récupération de l'utilisateur" });
+    if (!email) {
+        return res.status(400).json({ message: "Email requis" });
     }
 
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Utilisateur non trouvé" });
-    }
+    // Requête pour obtenir l'utilisateur par son email
+    const sqlUser = "SELECT id FROM user WHERE email = ?";
 
-    const userId = result[0].id;
+    db.query(sqlUser, [email], (err, result) => {
+        if (err) {
+            console.error("Erreur lors de la récupération de l'utilisateur :", err);
+            return res.status(500).json({ error: "Erreur lors de la récupération de l'utilisateur" });
+        }
 
-    // Requête pour vérifier si le ticket appartient à l'utilisateur et s'il est dans un lot
-    const query = `
+        if (result.length === 0) {
+            return res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
+
+        const userId = result[0].id;
+
+        // Requête pour vérifier si le ticket appartient à l'utilisateur et s'il est dans un lot
+        const query = `
             SELECT lot.*
             FROM lot
             JOIN ticket ON lot.idTicket = ticket.idTicket
             WHERE ticket.title = ? AND ticket.idUser = ?
         `;
 
-    db.query(query, [ticketNumber, userId], (err, results) => {
-      if (err) {
-        console.error("Erreur lors de la vérification du ticket :", err);
-        return res
-          .status(500)
-          .json({ error: "Erreur lors de la vérification du ticket" });
-      }
-
-      if (results.length > 0) {
-        res.json({ exists: true });
-      } else {
-        const userTicketQuery =
-          "SELECT * FROM ticket WHERE title = ? AND idUser = ?";
-        db.query(
-          userTicketQuery,
-          [ticketNumber, userId],
-          (err, userTicketResults) => {
+        db.query(query, [ticketNumber, userId], (err, results) => {
             if (err) {
-              console.error(
-                "Erreur lors de la vérification du ticket utilisateur :",
-                err
-              );
-              return res.status(500).json({
-                error: "Erreur lors de la vérification du ticket utilisateur",
-              });
+                console.error("Erreur lors de la vérification du ticket :", err);
+                return res.status(500).json({ error: "Erreur lors de la vérification du ticket" });
             }
 
-            if (userTicketResults.length === 0) {
-              res
-                .status(403)
-                .json({ message: "Ce ticket ne vous appartient pas." });
+            if (results.length > 0) {
+                res.json({ exists: true });
             } else {
-              res.json({ exists: false });
+                const userTicketQuery = "SELECT * FROM ticket WHERE title = ? AND idUser = ?";
+                db.query(userTicketQuery, [ticketNumber, userId], (err, userTicketResults) => {
+                    if (err) {
+                        console.error("Erreur lors de la vérification du ticket utilisateur :", err);
+                        return res.status(500).json({
+                            error: "Erreur lors de la vérification du ticket utilisateur",
+                        });
+                    }
+
+                    if (userTicketResults.length === 0) {
+                        res.status(403).json({ message: "Ce ticket ne vous appartient pas." });
+                    } else {
+                        res.json({ exists: false });
+                    }
+                });
             }
-          }
-        );
-      }
+        });
     });
-  });
 });
 
 // Route pour récupérer le numero de ticket entré par l'utilisateur
 app.get("/api/ticket/:ticketNumber", (req, res) => {
-  const ticketNumber = req.params.ticketNumber;
-  const query = "SELECT * FROM ticket WHERE title = ?";
-  db.query(query, [ticketNumber], (err, results) => {
-    if (err) {
-      console.error("Erreur lors de la récupération des données :", err);
-      res
-        .status(500)
-        .json({ error: "Erreur lors de la récupération des données" });
-      return;
-    }
-    if (results.length > 0) {
-      res.json({ valid: true });
-    } else {
-      res.json({ valid: false });
-    }
-  });
+    const ticketNumber = req.params.ticketNumber;
+    const query = "SELECT * FROM ticket WHERE title = ?";
+    db.query(query, [ticketNumber], (err, results) => {
+        if (err) {
+            console.error("Erreur lors de la récupération des données :", err);
+            res.status(500).json({ error: "Erreur lors de la récupération des données" });
+            return;
+        }
+        if (results.length > 0) {
+            res.json({ valid: true });
+        } else {
+            res.json({ valid: false });
+        }
+    });
 });
 
 // route pour enregistrer un lot gagné
 app.post("/api/lot", (req, res) => {
-  const { title, idTicket } = req.body;
+    const { title, idTicket } = req.body;
 
-  if (!title || !idTicket) {
-    return res
-      .status(400)
-      .json({ error: "Les champs title et idTicket sont requis" });
-  }
-
-  // Vérifiez que le ticket existe et récupérez son id
-  const ticketQuery = "SELECT idTicket FROM ticket WHERE title = ?";
-  db.query(ticketQuery, [idTicket], (err, results) => {
-    if (err) {
-      console.error("Erreur lors de la récupération du ticket :", err);
-      res
-        .status(500)
-        .json({ error: "Erreur lors de la récupération du ticket" });
-      return;
-    }
-    if (results.length === 0) {
-      return res.status(404).json({ error: "Ticket non trouvé" });
+    if (!title || !idTicket) {
+        return res.status(400).json({ error: "Les champs title et idTicket sont requis" });
     }
 
-    const ticketId = results[0].idTicket;
+    // Vérifiez que le ticket existe et récupérez son id
+    const ticketQuery = "SELECT idTicket FROM ticket WHERE title = ?";
+    db.query(ticketQuery, [idTicket], (err, results) => {
+        if (err) {
+            console.error("Erreur lors de la récupération du ticket :", err);
+            res.status(500).json({ error: "Erreur lors de la récupération du ticket" });
+            return;
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Ticket non trouvé" });
+        }
 
-    // Insérez le lot dans la table lot avec l'id du ticket
-    const lotQuery = "INSERT INTO lot (title, idTicket) VALUES (?, ?)";
-    db.query(lotQuery, [title, ticketId], (err, results) => {
-      if (err) {
-        console.error("Erreur lors de l'enregistrement du lot (serveur):", err);
-        res
-          .status(500)
-          .json({ error: "Erreur lors de l'enregistrement du lot (serveur)" });
-        return;
-      }
-      res.status(201).json({
-        message: "Lot enregistré avec succès",
-        lotId: results.insertId,
-      });
+        const ticketId = results[0].idTicket;
+
+        // Insérez le lot dans la table lot avec l'id du ticket
+        const lotQuery = "INSERT INTO lot (title, idTicket) VALUES (?, ?)";
+        db.query(lotQuery, [title, ticketId], (err, results) => {
+            if (err) {
+                console.error("Erreur lors de l'enregistrement du lot (serveur):", err);
+                res.status(500).json({ error: "Erreur lors de l'enregistrement du lot (serveur)" });
+                return;
+            }
+            res.status(201).json({
+                message: "Lot enregistré avec succès",
+                lotId: results.insertId,
+            });
+        });
     });
-  });
 });
 
 app.put("/api/lot/:idLot", (req, res) => {
-  const { idLot } = req.params;
-  const { title } = req.body;
+    const { idLot } = req.params;
+    const { title } = req.body;
 
-  if (!title) {
-    return res.status(400).json({ error: "Le champs titre est requis" });
-  }
-
-  // Vérifiez si le lot existe
-  const checkLotQuery = "SELECT idLot FROM lot WHERE idLot = ?";
-  db.query(checkLotQuery, [idLot], (err, results) => {
-    if (err) {
-      console.error("Erreur lors de la récupération du lot :", err);
-      return res
-        .status(500)
-        .json({ error: "Erreur lors de la récupération du lot" });
+    if (!title) {
+        return res.status(400).json({ error: "Le champs titre est requis" });
     }
 
-    if (results.length === 0) {
-      return res.status(404).json({ error: "Lot non trouvé" });
-    }
+    // Vérifiez si le lot existe
+    const checkLotQuery = "SELECT idLot FROM lot WHERE idLot = ?";
+    db.query(checkLotQuery, [idLot], (err, results) => {
+        if (err) {
+            console.error("Erreur lors de la récupération du lot :", err);
+            return res.status(500).json({ error: "Erreur lors de la récupération du lot" });
+        }
 
-    // Mise à jour du lot
-    const updateLotQuery = "UPDATE lot SET title = ? WHERE idLot = ?";
-    db.query(updateLotQuery, [title, idLot], (err, results) => {
-      if (err) {
-        console.error("Erreur lors de la mise à jour du lot :", err);
-        return res
-          .status(500)
-          .json({ error: "Erreur lors de la mise à jour du lot" });
-      }
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Lot non trouvé" });
+        }
 
-      // Réponse de succès
-      res.status(200).json({ message: "Lot mis à jour avec succès" });
+        // Mise à jour du lot
+        const updateLotQuery = "UPDATE lot SET title = ? WHERE idLot = ?";
+        db.query(updateLotQuery, [title, idLot], (err, results) => {
+            if (err) {
+                console.error("Erreur lors de la mise à jour du lot :", err);
+                return res.status(500).json({ error: "Erreur lors de la mise à jour du lot" });
+            }
+
+            // Réponse de succès
+            res.status(200).json({ message: "Lot mis à jour avec succès" });
+        });
     });
-  });
 });
 
 app.put("/api/jeu/:idJeu", (req, res) => {
-  const { idJeu } = req.params;
-  const { title } = req.body;
+    const { idJeu } = req.params;
+    const { title } = req.body;
 
-  if (!title) {
-    return res.status(400).json({ message: "Titre requis" });
-  }
-
-  const sql = "SELECT idJeu FROM jeu WHERE idJeu = ?";
-
-  db.query(sql, [idJeu], (err, result) => {
-    if (err) {
-      console.error("Erreur lors de la récupération du jeu :", err);
-      return res
-        .status(500)
-        .json({ error: "Erreur lors de la récupération du lot" });
+    if (!title) {
+        return res.status(400).json({ message: "Titre requis" });
     }
 
-    if (result.length === 0) {
-      return res.status(404).json({ error: "Jeu non trouvé" });
-    }
+    const sql = "SELECT idJeu FROM jeu WHERE idJeu = ?";
 
-    const updatedJeuQuery = "UPDATE jeu SET title = ? WHERE idJeu = ?";
-    db.query(updatedJeuQuery, [title, idJeu], (err, result) => {
-      if (err) {
-        return res.status(500).json({ err });
-      }
-      return res.json({ status: "success" });
+    db.query(sql, [idJeu], (err, result) => {
+        if (err) {
+            console.error("Erreur lors de la récupération du jeu :", err);
+            return res.status(500).json({ error: "Erreur lors de la récupération du lot" });
+        }
+
+        if (result.length === 0) {
+            return res.status(404).json({ error: "Jeu non trouvé" });
+        }
+
+        const updatedJeuQuery = "UPDATE jeu SET title = ? WHERE idJeu = ?";
+        db.query(updatedJeuQuery, [title, idJeu], (err, result) => {
+            if (err) {
+                return res.status(500).json({ err });
+            }
+            return res.json({ status: "success" });
+        });
     });
-  });
 });
 //route pour récupérer tous les lots
 app.get("/api/totalLots", (req, res) => {
-  const query = "SELECT * FROM lot";
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error("Erreur lors de la récupération des lots :", err);
-      res
-        .status(500)
-        .json({ error: "Erreur lors de la récupération des lots" });
-      return;
-    }
-    res.json(results);
-  });
+    const query = "SELECT * FROM lot";
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error("Erreur lors de la récupération des lots :", err);
+            res.status(500).json({ error: "Erreur lors de la récupération des lots" });
+            return;
+        }
+        res.json(results);
+    });
 });
 
 app.get("/protected-route", verifyToken, (req, res) => {
-  // Si le token est valide, vous pouvez utiliser req.email pour accéder à l'adresse e-mail de l'utilisateur
-  res.json({ message: "Access granted", email: req.email });
+    // Si le token est valide, vous pouvez utiliser req.email pour accéder à l'adresse e-mail de l'utilisateur
+    res.json({ message: "Access granted", email: req.email });
 });
 
 app.post("/api/contact", async (req, res) => {
-  try {
-    const { email, message, subject, fullname } = req.body;
+    try {
+        const { email, message, subject, fullname } = req.body;
 
-    if (!email || !message || !subject || !fullname) {
-      return res.status(400).json({
-        error:
-          "Tous les champs sont obligatoires : email, message, sujet, nom complet.",
-      });
+        if (!email || !message || !subject || !fullname) {
+            return res.status(400).json({
+                error: "Tous les champs sont obligatoires : email, message, sujet, nom complet.",
+            });
+        }
+
+        const transporter = nodemailer.createTransport(
+            smtpTransport({
+                service: "gmail",
+                host: process.env.SMTP_HOST,
+                port: process.env.SMTP_PORT,
+                auth: {
+                    user: "gwordpress387@gmail.com",
+                    pass: "nepsgrqvybcvjjah",
+                },
+            })
+        );
+
+        const mailOptions = {
+            from: email,
+            to: "gwordpress387@gmail.com",
+            subject: subject,
+            text: `De: ${fullname}\nEmail: ${email}\nMessage: ${message}`,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log("Erreur lors de l'envoi de l'email :", error);
+            } else {
+                console.log("Email envoyé :", info.response);
+            }
+        });
+
+        res.json({ message: "Votre message a été envoyé avec succès." });
+    } catch (error) {
+        console.error("Une erreur s'est produite :", error);
+        res.status(500).send("Une erreur s'est produite lors de l'envoi de l'e-mail.");
     }
-
-    const transporter = nodemailer.createTransport(
-      smtpTransport({
-        service: "gmail",
-        host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT,
-        auth: {
-          user: "gwordpress387@gmail.com",
-          pass: "nepsgrqvybcvjjah",
-        },
-      })
-    );
-
-    const mailOptions = {
-      from: email,
-      to: "gwordpress387@gmail.com",
-      subject: subject,
-      text: `De: ${fullname}\nEmail: ${email}\nMessage: ${message}`,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log("Erreur lors de l'envoi de l'email :", error);
-      } else {
-        console.log("Email envoyé :", info.response);
-      }
-    });
-
-    res.json({ message: "Votre message a été envoyé avec succès." });
-  } catch (error) {
-    console.error("Une erreur s'est produite :", error);
-    res
-      .status(500)
-      .send("Une erreur s'est produite lors de l'envoi de l'e-mail.");
-  }
 });
 
 app.post("/logout", (req, res) => {
-  res.json({ Message: "Logged out successfully" });
+    res.json({ Message: "Logged out successfully" });
 });
 
 app.listen(port, (err) => {
-  if (err) throw err;
-  console.log(`> Prêt sur http://localhost:${port}`);
+    if (err) throw err;
+    console.log(`> Prêt sur http://localhost:${port}`);
 });
