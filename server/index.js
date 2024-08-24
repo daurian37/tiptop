@@ -29,7 +29,7 @@ const port = 8000 || process.env.PORT;
 // });
 
 // Détermine le chemin où les logs seront écrits
-const logDirectory = fs.existsSync("./tmp") ? "./tmp" : __dirname;
+const logDirectory = fs.existsSync("/tmp") ? "/tmp" : __dirname;
 const logFilePath = path.join(logDirectory, "app.log");
 
 // Middleware pour enregistrer les logs des requêtes
