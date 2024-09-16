@@ -28,7 +28,8 @@ jobs:
       run: npm install
       working-directory: ./client
 
-    # Exécution des tests dans le répertoire 'client'
-    - name: Run tests
+    # Exécution des tests unitaires dans le répertoire 'client'
+    - name: Run unit tests
       run: npm test
       working-directory: ./client
+
