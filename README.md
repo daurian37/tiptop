@@ -66,3 +66,11 @@ executer les tests unitaires:
 ```bash
 npm run test
 ```
+
+Script pour générer les tickets:
+Aller dans le repertoire server ( cd server)
+
+```bash
+cd server
+node seed.js
+```

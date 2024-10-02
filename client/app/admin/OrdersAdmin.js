@@ -8,7 +8,7 @@ const OrdersAdmin = () => {
 
     useEffect(() => {
         axios
-            .get("http://localhost:8000/tickets/users")
+            .get("https://tiptop-server.vercel.app/tickets/users")
             .then((response) => {
                 setTickets(response.data.tickets);
             })
@@ -29,7 +29,7 @@ const OrdersAdmin = () => {
 
     return (
         <div>
-            <h3 className="text-center">Liste des tickets</h3>
+            <h3 className="text-center">Mes tickets</h3>
             {tickets.length > 0 ? (
                 <div className="row justify-content-start">
                     {tickets.map((ticket) => (

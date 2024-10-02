@@ -2,23 +2,23 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import ResponsivePagination from "react-responsive-pagination";
 
-const LotsAdmin = () => {
+const GameAdmin = () => {
     const [pageNumber] = useState(15);
-    const [lots, setLots] = useState([]);
+    const [jeux, setJeu] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [isEdit, setIsEdit] = useState(null);
-    const [editedLot, setEditedLot] = useState({ idLot: null, title: "" });
+    const [editedJeu, setEditedJeu] = useState({ idJeu: null, title: "" });
 
     useEffect(() => {
         axios
-            .get("https://tiptop-server.vercel.app/list/lots")
+            .get("https://tiptop-server.vercel.app/jeu")
             .then((response) => {
-                const lotList = response.data;
-                setLots(lotList);
+                const jeuList = response.data;
+                setJeu(jeuList);
 
                 // Calculer le nombre total de pages
-                const pages = Math.ceil(lotList.length / pageNumber);
+                const pages = Math.ceil(jeuList.length / pageNumber);
                 setTotalPages(pages);
             })
             .catch((error) => {
@@ -26,34 +26,34 @@ const LotsAdmin = () => {
             });
     }, [pageNumber]);
 
-    const indexOfLastLot = currentPage * pageNumber;
-    const indexOfFirstLot = indexOfLastLot - pageNumber;
-    const currentLots = lots.slice(indexOfFirstLot, indexOfLastLot);
+    const indexOfLastJeu = currentPage * pageNumber;
+    const indexOfFirstJeu = indexOfLastJeu - pageNumber;
+    const currentJeux = jeux.slice(indexOfFirstJeu, indexOfLastJeu);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
 
-    const handleEditLot = (lot) => {
-        setIsEdit(lot.idLot);
-        setEditedLot({ idLot: lot.idLot, title: lot.title });
+    const handleEditJeu = (jeu) => {
+        setIsEdit(jeu.idJeu);
+        setEditedJeu({ idJeu: jeu.idJeu, title: jeu.title });
     };
 
-    const handleCancelLot = () => {
+    const handleCancelJeu = () => {
         setIsEdit(null);
     };
 
-    const handleChangeLot = (e) => {
-        setEditedLot({ ...editedLot, title: e.target.value });
+    const handleChangeJeu = (e) => {
+        setEditedJeu({ ...editedJeu, title: e.target.value });
     };
 
-    const handleSaveLot = (idLot) => {
+    const handleSaveJeu = (idJeu) => {
         axios
-            .put(`https://tiptop-server.vercel.app/api/lot/${idLot}`, { title: editedLot.title })
+            .put(`https://tiptop-server.vercel.app/api/jeu/${idJeu}`, { title: editedJeu.title })
             .then((response) => {
-                const updatedLot = response.data;
-                const updatedLots = lots.map((lot) => (lot.idLot === updatedLot.idLot ? updatedLot : lot));
-                setLots(updatedLots);
+                const updatedJeu = response.data;
+                const updatedJeux = jeux.map((jeu) => (jeu.idJeu === updatedJeu.idJeu ? updatedJeu : jeu));
+                setJeu(updatedJeux);
                 setIsEdit(null);
                 window.location.reload();
             })
@@ -64,16 +64,16 @@ const LotsAdmin = () => {
 
     return (
         <div>
-            <h3 className="text-center">Liste des lots</h3>
+            <h3 className="text-center">Liste des jeux</h3>
             <table className="rwd-table">
                 <tbody>
                     <tr>
                         <th className="text-center">Titre</th>
                     </tr>
-                    {currentLots.map((lot) => (
-                        <tr key={lot.idLot}>
+                    {currentJeux.map((jeu) => (
+                        <tr key={jeu.idJeu}>
                             <td className="text-center" data-th="titre">
-                                <input type="text" name="title" value={isEdit === lot.idLot ? editedLot.title : lot.title} onChange={handleChangeLot} className={`form-control border bgeditlot ${isEdit === lot.idLot ? "editlot" : ""}`} disabled={isEdit !== lot.idLot} />
+                                <input type="text" name="title" value={isEdit === jeu.idJeu ? editedJeu.title : jeu.title} onChange={handleChangeJeu} className={`form-control border bgeditjeu ${isEdit === jeu.idJeu ? "editjeu" : ""}`} disabled={isEdit !== jeu.idJeu} />
                             </td>
                         </tr>
                     ))}
@@ -86,4 +86,4 @@ const LotsAdmin = () => {
     );
 };
 
-export default LotsAdmin;
+export default GameAdmin;

@@ -35,7 +35,7 @@ const login = () => {
         }
 
         axios
-            .post("http://localhost:8000/login", value)
+            .post("https://tiptop-server.vercel.app/login", value)
             .then((res) => {
                 localStorage.setItem("token", res.data.token);
                 setIsLoggedIn(true);
@@ -46,14 +46,18 @@ const login = () => {
 
                 if (user.category === 1) {
                     window.location.href = "/admin";
+                } else if (user.category === 3) {
+                    window.location.href = "/employee";
                 } else {
                     window.location.href = "/";
                 }
             })
             .catch((err) => {
-                setErrors({}); // Réinitialiser les erreurs précédentes
-                setErrorMessage(err.response.data);
+                setErrors({}); 
+                const errorMessage = err.response?.data || "Une erreur s'est produite. Veuillez réessayer.";
+                setErrorMessage(errorMessage);
             });
+
     };
 
     const handleChange = (e) => {

@@ -37,3 +37,16 @@ yarn-error.log*
 next-env.d.ts
 # yarn 
 yarn.lock
+
+# Ignorer le dossier elasticsearch-8.15.0
+elasticsearch-8.15.0/
+
+# Ignorer le dossier kibana-8.15.0
+kibana-8.15.0/
+
+# Ignorer le dossier logstash-8.15.0
+logstash-8.15.0/
+# Ignorer le fichier *.tar.gz
+*.tar.gz
+# Ignorer le fichier logstash.conf
+logstash.conf

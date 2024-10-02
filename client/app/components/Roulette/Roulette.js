@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Wheel } from "react-custom-roulette";
 import swal from "sweetalert";
 import "../../../public/assets/css/roulette.css";
 import Confetti from "../utils/confetti";
+import dynamic from "next/dynamic";
+
+const Wheel = dynamic(() => import("react-custom-roulette").then((mod) => mod.Wheel), { ssr: false });
 
 const data = [
     { option: "Infuseur à Thé", weight: 60 },
     { option: "Thé détox", weight: 20 },
     { option: "Thé signature", weight: 10 },
     { option: "Coffret D mini", weight: 6 },
-    { option: "Coffret D max", weight: 4 }
+    { option: "Coffret D max", weight: 4 },
 ];
 
 const Roulette = () => {
@@ -26,7 +28,7 @@ const Roulette = () => {
     useEffect(() => {
         const fetchTotalLots = async () => {
             try {
-                const response = await fetch("http://localhost:8000/api/totalLots");
+                const response = await fetch("https://tiptop-server.vercel.app/api/totalLots");
                 const result = await response.json();
                 setTotalLots(result.length);
                 const counts = result.reduce((acc, lot) => {
@@ -57,7 +59,7 @@ const Roulette = () => {
     };
 
     const handleSpinClick = () => {
-        if (totalLots == 20) {
+        if (totalLots == 50) {
             setErrorMessage("Tous les lots ont été attribués. Merci de revenir plus tard.");
             return;
         }
@@ -75,12 +77,12 @@ const Roulette = () => {
             const token = localStorage.getItem("token");
 
             // Valider le ticket
-            const response = await fetch(`http://localhost:8000/api/ticket/${ticketNumber}`);
+            const response = await fetch(`https://tiptop-server.vercel.app/api/ticket/${ticketNumber}`);
             const result = await response.json();
 
             if (result.valid) {
                 // Vérifier si le ticket existe déjà dans la table lot
-                const checkResponse = await fetch(`http://localhost:8000/api/checkTicketInLot/${ticketNumber}`, {
+                const checkResponse = await fetch(`https://tiptop-server.vercel.app/api/checkTicketInLot/${ticketNumber}`, {
                     headers: {
                         Authorization: token,
                     },
@@ -115,7 +117,7 @@ const Roulette = () => {
 
     const savePrizeToDatabase = async (title, idTicket) => {
         try {
-            const response = await fetch("http://localhost:8000/api/lot", {
+            const response = await fetch("https://tiptop-server.vercel.app/api/lot", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -139,6 +141,8 @@ const Roulette = () => {
                 icon: "success",
                 buttons: false,
             });
+            setTicketNumber("");
+            setIsValidTicket(false);
         } catch (error) {
             console.error("Erreur lors de l'enregistrement du lot (client):", error.message);
         }

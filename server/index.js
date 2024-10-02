@@ -4,6 +4,10 @@ const env = require("dotenv");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const db = require("./db");
+const nodemailer = require("nodemailer");
+const smtpTransport = require("nodemailer-smtp-transport");
+const fs = require("fs");
+const path = require("path");
 
 // A decomenter avant de lancer la création de l'image docker
 // const mysql = require("mysql");
@@ -23,6 +27,52 @@ const port = 8000 || process.env.PORT;
 //   database: "tiptop",
 //   port: 3306,
 // });
+
+// Détermine le chemin de sauvregade des logs 
+const logDirectory = fs.existsSync("/tmp") ? "/tmp" : __dirname;
+const logFilePath = path.join(logDirectory, "app.log");
+
+// Middleware pour enregistrer les logs des requêtes
+app.use((req, res, next) => {
+    const start = Date.now();
+
+    res.on("finish", () => {
+        const duration = Date.now() - start;
+        const log = {
+            method: req.method,
+            url: req.url,
+            status: res.statusCode,
+            duration: `${duration}ms`,
+            timestamp: new Date().toISOString(),
+            clientIp: req.ip || req.connection.remoteAddress,
+            userAgent: req.headers["user-agent"],
+            requestedFrom: req.headers["x-requested-from"] || "Unknown",
+            requestBody: req.body,
+            queryParams: req.query,
+        };
+
+        try {
+            // Enregistre le log dans le bon fichier
+            fs.appendFileSync(logFilePath, JSON.stringify(log) + "\n");
+            console.log("Log écrit dans:", logFilePath); // Affiche le chemin utilisé
+        } catch (err) {
+            console.error("Erreur lors de l'écriture des logs : ", err);
+        }
+    });
+
+    next();
+});
+
+// Route pour lire et servir le fichier de logs
+app.get("/logs", (req, res) => {
+    fs.readFile(logFilePath, "utf8", (err, data) => {
+        if (err) {
+            return res.status(500).send("Erreur lors de la lecture du fichier de logs");
+        }
+        res.setHeader("Content-Type", "text/plain");
+        res.send(data);
+    });
+});
 
 app.get("/", (req, res) => {
     res.send("Welcome ");
@@ -87,7 +137,9 @@ app.put("/profile", verifyToken, (req, res) => {
     if (newPassword) {
         const validPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
         if (!newPassword.match(validPassword)) {
-            return res.status(400).json({ message: "Le mot de passe doit contenir entre 8 et 20 caractères, inclure au moins une lettre majuscule, une lettre minuscule et un chiffre." });
+            return res.status(400).json({
+                message: "Le mot de passe doit contenir entre 8 et 20 caractères, inclure au moins une lettre majuscule, une lettre minuscule et un chiffre.",
+            });
         }
     }
 
@@ -206,11 +258,52 @@ app.get("/tickets", verifyToken, (req, res) => {
     });
 });
 
+app.get("/list/ticket", (req, res) => {
+    const sqlTickets = `
+        SELECT t.idTicket, t.title AS ticketTitle, t.idUser, t.idJeu, j.title AS jeuTitle, j.description AS jeuDescription, j.nbre_participant, j.date_debut, j.date_fin 
+        FROM ticket t 
+        JOIN jeu j ON t.idJeu = j.idJeu
+    `;
+
+    db.query(sqlTickets, (err, tickets) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        res.json({ tickets });
+    });
+});
+
+// Afficher tous les tickets
+app.get("/list/tickets", (req, res) => {
+    const sql = "SELECT * FROM `ticket`";
+    db.query(sql, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        res.json(result);
+    });
+});
+
+app.get("/list/lots", (req, res) => {
+    const sql = "SELECT * FROM `lot`";
+    db.query(sql, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        res.json(result);
+    });
+});
+
 app.get("/lots/users", (req, res) => {
     const sql = `
-        SELECT l.idLot, l.title AS lotTitle, t.title AS ticketTitle
+        SELECT l.idLot, l.title AS lotTitle, t.title AS ticketTitle, t.idUser AS idUser,
+            u.firstname, u.lastname
         FROM lot l
         LEFT JOIN ticket t ON l.idTicket = t.idTicket
+        LEFT JOIN user u ON t.idUser = u.id
     `;
 
     db.query(sql, (err, result) => {
@@ -254,6 +347,17 @@ app.get("/lots", verifyToken, (req, res) => {
 
             res.json({ user: result[0], lots: lots });
         });
+    });
+});
+
+app.get("/jeu", (req, res) => {
+    const sql = "SELECT * FROM jeu";
+    db.query(sql, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        res.json(result);
     });
 });
 
@@ -363,7 +467,9 @@ app.get("/api/checkTicketInLot/:ticketNumber", verifyToken, (req, res) => {
                 db.query(userTicketQuery, [ticketNumber, userId], (err, userTicketResults) => {
                     if (err) {
                         console.error("Erreur lors de la vérification du ticket utilisateur :", err);
-                        return res.status(500).json({ error: "Erreur lors de la vérification du ticket utilisateur" });
+                        return res.status(500).json({
+                            error: "Erreur lors de la vérification du ticket utilisateur",
+                        });
                     }
 
                     if (userTicketResults.length === 0) {
@@ -433,6 +539,69 @@ app.post("/api/lot", (req, res) => {
     });
 });
 
+app.put("/api/lot/:idLot", (req, res) => {
+    const { idLot } = req.params;
+    const { title } = req.body;
+
+    if (!title) {
+        return res.status(400).json({ error: "Le champs titre est requis" });
+    }
+
+    // Vérifiez si le lot existe
+    const checkLotQuery = "SELECT idLot FROM lot WHERE idLot = ?";
+    db.query(checkLotQuery, [idLot], (err, results) => {
+        if (err) {
+            console.error("Erreur lors de la récupération du lot :", err);
+            return res.status(500).json({ error: "Erreur lors de la récupération du lot" });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Lot non trouvé" });
+        }
+
+        // Mise à jour du lot
+        const updateLotQuery = "UPDATE lot SET title = ? WHERE idLot = ?";
+        db.query(updateLotQuery, [title, idLot], (err, results) => {
+            if (err) {
+                console.error("Erreur lors de la mise à jour du lot :", err);
+                return res.status(500).json({ error: "Erreur lors de la mise à jour du lot" });
+            }
+
+            // Réponse de succès
+            res.status(200).json({ message: "Lot mis à jour avec succès" });
+        });
+    });
+});
+
+app.put("/api/jeu/:idJeu", (req, res) => {
+    const { idJeu } = req.params;
+    const { title } = req.body;
+
+    if (!title) {
+        return res.status(400).json({ message: "Titre requis" });
+    }
+
+    const sql = "SELECT idJeu FROM jeu WHERE idJeu = ?";
+
+    db.query(sql, [idJeu], (err, result) => {
+        if (err) {
+            console.error("Erreur lors de la récupération du jeu :", err);
+            return res.status(500).json({ error: "Erreur lors de la récupération du lot" });
+        }
+
+        if (result.length === 0) {
+            return res.status(404).json({ error: "Jeu non trouvé" });
+        }
+
+        const updatedJeuQuery = "UPDATE jeu SET title = ? WHERE idJeu = ?";
+        db.query(updatedJeuQuery, [title, idJeu], (err, result) => {
+            if (err) {
+                return res.status(500).json({ err });
+            }
+            return res.json({ status: "success" });
+        });
+    });
+});
 //route pour récupérer tous les lots
 app.get("/api/totalLots", (req, res) => {
     const query = "SELECT * FROM lot";
@@ -446,10 +615,53 @@ app.get("/api/totalLots", (req, res) => {
     });
 });
 
-
 app.get("/protected-route", verifyToken, (req, res) => {
     // Si le token est valide, vous pouvez utiliser req.email pour accéder à l'adresse e-mail de l'utilisateur
     res.json({ message: "Access granted", email: req.email });
+});
+
+app.post("/api/contact", async (req, res) => {
+    try {
+        const { email, message, subject, fullname } = req.body;
+
+        if (!email || !message || !subject || !fullname) {
+            return res.status(400).json({
+                error: "Tous les champs sont obligatoires : email, message, sujet, nom complet.",
+            });
+        }
+
+        const transporter = nodemailer.createTransport(
+            smtpTransport({
+                service: "gmail",
+                host: process.env.SMTP_HOST,
+                port: process.env.SMTP_PORT,
+                auth: {
+                    user: "gwordpress387@gmail.com",
+                    pass: "nepsgrqvybcvjjah",
+                },
+            })
+        );
+
+        const mailOptions = {
+            from: email,
+            to: "gwordpress387@gmail.com",
+            subject: subject,
+            text: `De: ${fullname}\nEmail: ${email}\nMessage: ${message}`,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log("Erreur lors de l'envoi de l'email :", error);
+            } else {
+                console.log("Email envoyé :", info.response);
+            }
+        });
+
+        res.json({ message: "Votre message a été envoyé avec succès." });
+    } catch (error) {
+        console.error("Une erreur s'est produite :", error);
+        res.status(500).send("Une erreur s'est produite lors de l'envoi de l'e-mail.");
+    }
 });
 
 app.post("/logout", (req, res) => {
